@@ -33,3 +33,33 @@ A lightweight personal daily-use web application for building focus, discipline,
 ## Documentation
 - [Frontend README](./frontend/README.md)
 - [Backend README](./backend/README.md)
+
+## Contributing
+
+We follow the **[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)** specification for all commit messages.
+
+### Ways to Contribute
+- Report bugs and suggest features by opening issues
+- Improve documentation under `/docs` and `README.md`
+- Fix bugs and add enhancements in code under `/backend` and `/frontend`.
+- Add or improve tests to increase coverage.
+
+**Types you should use include** (but are not limited to):
+
+| Type | Meaning |
+|------|---------|
+| `feat` | introduces new user-facing functionality |
+| `fix` | corrects a bug |
+| `docs` | documentation only changes |
+| `style` | formatting only |
+| `refactor` | code changes that don't change behaviour|
+| `perf` | performance improvements |
+| `test` | add or modify test only |
+| `build` | build system or dependency changes |
+| `ci` | ci/cd changes |
+| `chore` | maintenance, toolling, repo hygience |
+| `revert` | reverting a previous commit |
+
+**Commit Practice**
+- Write commit messages in the **present tense** and as short summaries.
+- One commit should represent **one logical change**.
