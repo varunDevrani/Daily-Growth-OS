@@ -48,8 +48,8 @@ FastAPI-based backend handling data persistence, insights generation and streak 
 
 3. **Install dependencies**
     ```bash
-    python3 -m pip -r requirements.txt
-    python3 -m pip -r requirements-dev.txt
+    python3 -m pip install -r requirements.txt
+    python3 -m pip install -r requirements-dev.txt
     ```
 
 4. **Set up PostgreSQL database**
@@ -90,7 +90,7 @@ DATABASE_URL=
 # Activate virtual environment
 source .venv/bin/activate
 
-# Run development server
+# Run development server(from backend folder)
 uvicorn src.main:app --reload --port 8000
 ```
 
