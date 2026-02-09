@@ -45,6 +45,11 @@ The frontend delivers:
     └── assets/
 ```
 
+## Design
+Figma files used for UI/UX design and user flows:
+- **Main UI / Dashboard**: [Figma](https://www.figma.com/design/unfTapszp4iDMA4Yx9y5QH/dailygrowthos-dashboard?node-id=501-5552&t=i3MAgEs5p7DXgW8l-1)
+- **Auth and Onboarding Flow**: [Figma](https://www.figma.com/design/fuzlFL84Khz2n11LG2iXpm/login-signup-reset-forgot-verify?node-id=214-123&t=w89nVmpKOK7Satr9-1)
+
 ## Page Structure
 
 ### Public / Access Pages
