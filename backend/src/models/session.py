@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from datetime import datetime, timezone
+from sqlalchemy.sql import func
+from datetime import datetime
 from src.database.base import Base
 
 
@@ -13,7 +14,7 @@ class Session(Base):
 
     expires_at = Column(DateTime)
     logout_at = Column(DateTime)
-    last_activity_at = Column(DateTime, default=datetime.now(datetime.timezone.utc))
+    last_activity_at = Column(DateTime, server_default=func.now())
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, server_default=func.now())
     deleted_at = Column(DateTime)
