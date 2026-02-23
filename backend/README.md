@@ -92,6 +92,11 @@ source .venv/bin/activate
 uvicorn src.main:app --reload --port 8000
 ```
 
+## Cleanup
+```
+python3 src/scripts/clean_pycache.py
+```
+
 ## API Documentation
 
 ### Endpoints
