@@ -21,13 +21,11 @@ FastAPI-based backend handling data persistence, insights generation and streak 
     ├── __init__.py
     ├── controllers/
     ├── database/
-    ├── middlewares/
     ├── models/
     ├── routes/
     ├── schemas/
     ├── services/
     ├── utils/
-    └── validators/
 ```
 
 ## Database Schema
