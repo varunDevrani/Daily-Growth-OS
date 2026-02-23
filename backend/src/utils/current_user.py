@@ -1,21 +1,27 @@
-
-from fastapi import Header
-from typing import Optional
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from src.utils.jwt_handler import verify_access_token
 
+security = HTTPBearer(auto_error=False)
 
-def get_current_user(authorization: str = Header(None)) -> Optional[int]:
-    if not authorization:
-        return None
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> int:
     
-    parts = authorization.split()
-    if len(parts) != 2 or parts[0].lower() != "bearer":
-        return None
+	if not credentials:
+		raise HTTPException(
+			status_code=401,
+			detail="not authenticated"
+		)
     
-    token = parts[1]
-    user_id = verify_access_token(token)
-    if not user_id:
-        return None
-    
-    return user_id
+	user_id = verify_access_token(credentials.credentials)
+	
+	if user_id is None:
+		raise HTTPException(
+			status_code=401,
+			detail="invalid token"
+		)
+	
+	return user_id
