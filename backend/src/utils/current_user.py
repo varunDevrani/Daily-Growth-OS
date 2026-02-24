@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from uuid import UUID
 
 from src.utils.jwt_handler import verify_access_token
 
@@ -8,7 +9,7 @@ security = HTTPBearer(auto_error=False)
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
-) -> int:
+) -> UUID:
     
 	if not credentials:
 		raise HTTPException(

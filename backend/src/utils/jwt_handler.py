@@ -1,6 +1,7 @@
 import jwt
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional, Tuple, Any
+from uuid import UUID
 
 import os
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7")
 ALGORITHM = "HS256"
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user_id: UUID) -> str:
 	expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
 	payload = {
@@ -27,7 +28,7 @@ def create_access_token(user_id: int) -> str:
 	return jwt.encode(payload, JWT_SECRET_KEY, algorithm=ALGORITHM)
 
 
-def create_refresh_token(user_id: int) -> Tuple[Dict[str, Any], str]:
+def create_refresh_token(user_id: UUID) -> Tuple[Dict[str, Any], str]:
 	expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
 
 	payload = {
@@ -52,15 +53,15 @@ def decode_token(token: str) -> Optional[Dict]:
 		return None
 	
 
-def verify_access_token(token: str) -> Optional[int]:
+def verify_access_token(token: str) -> Optional[UUID]:
 	payload = decode_token(token)
 	if payload and payload["type"] == "access":
-		return int(payload["user_id"])
+		return UUID(payload["user_id"])
 	return None
 
 
-def verify_refresh_token(token: str) -> Optional[int]:
+def verify_refresh_token(token: str) -> Optional[UUID]:
 	payload = decode_token(token)
 	if payload and payload["type"] == "refresh":
-		return int(payload["user_id"])
+		return UUID(payload["user_id"])
 	return None
