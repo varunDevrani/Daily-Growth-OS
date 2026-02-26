@@ -53,4 +53,8 @@ def login(email: str, password: str, db: Session):
     db.commit()
     db.refresh(refresh_token_data)
 
-    return (access_token, refresh_token)
+    return {
+		"type": "bearer",
+		"access_token": access_token,
+		"refresh_token": refresh_token
+	}
