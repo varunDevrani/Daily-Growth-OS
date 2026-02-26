@@ -18,20 +18,6 @@ def login(
         payload.password,
         db
     )
-
-    if service_data == services.LoginErrors.EMAIL_NOT_FOUND:
-        return {
-            "message": "email not found",
-            "success": False,
-            "status_code": 404,
-        }
-    
-    if service_data == services.LoginErrors.PASSWORD_MISMATCH:
-        return {
-            "message": "password mismatch",
-            "success": False,
-            "status_code": 401,
-        }
     
     return {
         "message": "user logged in",
