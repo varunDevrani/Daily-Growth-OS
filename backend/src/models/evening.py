@@ -5,7 +5,7 @@ from datetime import datetime
 
 class EveningReflection(Base):
     id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4,index=True)
-    user_id= Column(Integer,ForeignKey("users.id"),nullable=False)
+    user_id= Column(UUID(as_uuid=True),ForeignKey("users.id"),nullable=False)
     date=Column(Date,nullable=False)
     win=Column(String)
     mistake=Column(String)
