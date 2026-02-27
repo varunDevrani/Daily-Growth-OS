@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 
 class EveningReflection(Base):
+    __tablename__="evening"
     id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4,index=True)
     user_id= Column(UUID(as_uuid=True),ForeignKey("users.id"),nullable=False)
     date=Column(Date,nullable=False)
