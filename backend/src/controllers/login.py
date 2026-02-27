@@ -12,7 +12,7 @@ def login(
     response: Response,
     payload: LoginRequest,
     db: Session
-):
+) -> SuccessResponse:
     
     token_data = services.login(
         payload.email,
@@ -21,7 +21,6 @@ def login(
     )
     
     return SuccessResponse(
-		status_code=200,
 		message="User logged in. Verify OTP from mail.",
 		data={
 			"user": token_data

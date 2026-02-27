@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from src.exceptions import DomainException, ErrorCode, ErrorDetail
 from src.models.refresh_token import RefreshToken as RefreshTokenModel
 from src.models.user import User as UserModel
+from src.schemas.auth import LoginResponse
 from src.utils.hashing import verify_password
 from src.utils.jwt_handler import create_access_token, create_refresh_token
 
 
-def login(email: str, password: str, db: Session):
+def login(email: str, password: str, db: Session) -> LoginResponse:
     user_data = db.query(UserModel).filter(UserModel.email == email).first()
 
     if user_data is None:
@@ -53,8 +54,8 @@ def login(email: str, password: str, db: Session):
     db.commit()
     db.refresh(refresh_token_data)
 
-    return {
-		"type": "bearer",
-		"access_token": access_token,
-		"refresh_token": refresh_token
-	}
+    return LoginResponse(
+		token_type= "bearer",
+		access_token=access_token,
+		refresh_token=refresh_token
+    )

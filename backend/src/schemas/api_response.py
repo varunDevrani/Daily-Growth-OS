@@ -1,16 +1,10 @@
-from typing import Union, Dict, Any
-from fastapi.responses import JSONResponse
+from typing import Union, TypeVar, Generic
+from pydantic import BaseModel
 
+T = TypeVar("T")
 
-def SuccessResponse(
-	status_code: int,
-	message: str = "Request Successful",
-	data: Union[Dict[str, Any], None] = None
-) -> JSONResponse:
-	return JSONResponse(
-		status_code=status_code,
-		content={
-			"message": message,
-			"data": data
-		}
-	)
+class SuccessResponse(BaseModel, Generic[T]):
+	success: bool = True
+	message: str = "Request Successful"
+	data: Union[T, None] = None
+
