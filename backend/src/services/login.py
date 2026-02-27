@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 
 from src.exceptions import DomainException, ErrorCode, ErrorDetail
 from src.models.refresh_token import RefreshToken as RefreshTokenModel
@@ -32,7 +33,7 @@ def login(email: str, password: str, db: Session) -> LoginResponse:
         .filter(RefreshTokenModel.user_id == user_data.id)
         .first()
     )
-    if refresh_token_data is not None:
+    if refresh_token_data is not None and refresh_token_data.expires_at > datetime.now(timezone.utc):
         raise DomainException(
             409,
             ErrorCode.CONFLICT_ERROR,

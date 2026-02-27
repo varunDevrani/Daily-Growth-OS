@@ -12,7 +12,7 @@ class RefreshToken(Base):
 
     token = Column(String, nullable=False)
     issued_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    expires_at = Column(DateTime, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
     revoked_at = Column(DateTime)
 
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
