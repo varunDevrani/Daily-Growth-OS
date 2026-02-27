@@ -2,7 +2,8 @@
 from fastapi import Request, Response
 from sqlalchemy.orm import Session
 
-from src.schemas.auth import LoginRequest
+from src.schemas.auth import LoginRequest, LoginResponse
+from src.schemas.api_response import SuccessResponse
 import src.services.login as services
 
 
@@ -11,35 +12,15 @@ def login(
     response: Response,
     payload: LoginRequest,
     db: Session
-):
+) -> SuccessResponse:
     
-    service_data = services.login(
+    token_data = services.login(
         payload.email,
         payload.password,
         db
     )
-
-    if service_data == services.LoginErrors.EMAIL_NOT_FOUND:
-        return {
-            "message": "email not found",
-            "success": False,
-            "status_code": 404,
-        }
     
-    if service_data == services.LoginErrors.PASSWORD_MISMATCH:
-        return {
-            "message": "password mismatch",
-            "success": False,
-            "status_code": 401,
-        }
-    
-    return {
-        "message": "user logged in",
-        "success": False,
-        "status_code": 200,
-        "data": {
-            "access_token": service_data[0],
-            "refresh_token": service_data[1],
-            "type": "bearer"
-        }
-    }
+    return SuccessResponse[LoginResponse](
+		message="User logged in. Verify OTP from mail.",
+		data=token_data
+	)
