@@ -1,5 +1,6 @@
 from  pydantic import BaseModel
 from datetime import date,datetime
+from uuid import UUID
 
 
 class EveningCreate(BaseModel):
@@ -20,8 +21,8 @@ class EveningUpdate(BaseModel):
     lesson: str
 
 class EveningResponse(BaseModel):
-    id: str
-    user_id: int
+    id: UUID
+    user_id: UUID
     date: date
     win: str
     mistake: str
