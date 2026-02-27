@@ -13,9 +13,9 @@ def login(email: str, password: str, db: Session) -> LoginResponse:
 
     if user_data is None:
         raise DomainException(
-            401,
-            ErrorCode.AUTHENTICATION_ERROR,
-            "Invalid Credentials",
+            404,
+            ErrorCode.NOT_FOUND_ERROR,
+            "User does not exist",
             ErrorDetail(resource="users"),
         )
 
