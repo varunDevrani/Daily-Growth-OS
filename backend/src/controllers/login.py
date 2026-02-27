@@ -2,7 +2,7 @@
 from fastapi import Request, Response
 from sqlalchemy.orm import Session
 
-from src.schemas.auth import LoginRequest
+from src.schemas.auth import LoginRequest, LoginResponse
 from src.schemas.api_response import SuccessResponse
 import src.services.login as services
 
@@ -20,9 +20,7 @@ def login(
         db
     )
     
-    return SuccessResponse(
+    return SuccessResponse[LoginResponse](
 		message="User logged in. Verify OTP from mail.",
-		data={
-			"user": token_data
-		}
+		data=token_data
 	)
