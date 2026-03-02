@@ -13,6 +13,8 @@ class EveningReflection(Base):
     distraction=Column(String)
     mood_rating=Column(Integer)
     energy_rating=Column(Integer)
+    lesson=Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
-    __table_args__=(UniqueConstraint("user_id","date"))
+    # this is to ensure that a user can only fill evening reflection once per day
+    __table_args__=(UniqueConstraint("user_id","date"),)
