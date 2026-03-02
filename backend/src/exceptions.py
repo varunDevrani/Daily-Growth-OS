@@ -1,17 +1,8 @@
-from enum import Enum
 from typing import Union, List
 from pydantic import BaseModel
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-
-
-class ErrorCode(Enum):
-	CONFLICT_ERROR = "CONFLICT_ERROR"
-	VALIDATION_ERROR = "VALIDATION_ERROR"
-	AUTHENTICATION_ERROR = "AUTHENTICATION_ERROR"
-	NOT_FOUND_ERROR = "NOT_FOUND_ERROR"
-	INVALID_REFRESH_TOKEN_ERROR = "INVALID_REFRESH_TOKEN_ERROR"
-	INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR"
+from fastapi.exceptions import RequestValidationError
 
 
 class FieldViolation(BaseModel):
@@ -26,16 +17,27 @@ class DomainException(Exception):
 	def __init__(
 		self, 
 		status_code: int, 
-		error_code: ErrorCode, 
 		message: str,
-		details: ErrorDetail
+		field_violations: Union[List[FieldViolation], None] = None
 	):
 		self.status_code = status_code
-		self.error_code = error_code
 		self.message = message
-		self.details = details
+		self.field_violations = field_violations
 		super().__init__(message)
 		
+	
+def map_status_code_to_error_code(status_code: int) -> str:
+	mapping = {
+		409: "CONFLICT_ERROR",
+		422: "VALIDATION_ERROR",
+		401: "AUTHENTICATION_ERROR",
+		404: "NOT_FOUND_ERROR",
+		403: "FORBIDDEN",
+		500: "INTERNAL_SERVER_ERROR"
+	}
+	
+	return mapping.get(status_code, "UNKNOWN_ERROR_CODE")
+
 
 def register_exception_handlers(app: FastAPI):
 	@app.exception_handler(DomainException)
@@ -43,14 +45,57 @@ def register_exception_handlers(app: FastAPI):
 		request: Request,
 		exc: DomainException
 	):
+		
+		segments = [value for value in request.url.path.split("/") if value and not value.isdigit()]
+		resource = segments[-1] if segments else "unknown resource"
+		
 		return JSONResponse(
 			status_code=exc.status_code,
 			content={
 				"success": False,
+				"message": exc.message,
 				"error": {
-					"code": exc.error_code.value,
-					"message": exc.message,
-					"details": exc.details.model_dump(mode="json")
+					"code": map_status_code_to_error_code(exc.status_code),
+					"details": ErrorDetail(
+						resource=resource,
+						field_violations=exc.field_violations
+					).model_dump(mode="json")
 				}
 			}
 		)
+	
+	@app.exception_handler(RequestValidationError)
+	def validation_exception_handler(
+		request: Request,
+		exc: RequestValidationError
+	):
+		
+		field_violations = []
+		for error in exc.errors():
+			loc = error.get("loc", [])
+			field_path = ".".join([str(value) for value in loc if value != "body"])
+			field_violations.append(
+				FieldViolation(
+					field=field_path,
+					message=error.get("msg", "something went wrong")
+				)
+			)
+			
+		segments = [value for value in request.url.path.split("/") if value and not value.isdigit()]
+		resource = segments[-1] if segments else "unknown resource"
+		
+		return JSONResponse(
+			status_code=422,
+			content={
+				"success": False,
+				"message": "Request Validation Failed",
+				"error": {
+					"code": map_status_code_to_error_code(422),	
+					"details": ErrorDetail(
+						resource=resource,
+						field_violations=field_violations
+					).model_dump(mode="json")
+				}
+			}
+		) 
+

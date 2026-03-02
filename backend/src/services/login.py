@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
-from src.exceptions import DomainException, ErrorCode, ErrorDetail
+from src.exceptions import DomainException, FieldViolation
 from src.models.refresh_token import RefreshToken as RefreshTokenModel
 from src.models.user import User as UserModel
 from src.schemas.auth import LoginResponse
@@ -15,17 +15,17 @@ def login(email: str, password: str, db: Session) -> LoginResponse:
     if user_data is None:
         raise DomainException(
             404,
-            ErrorCode.NOT_FOUND_ERROR,
-            "User does not exist",
-            ErrorDetail(resource="users"),
+            "User does not exist"
         )
 
     if not verify_password(password, str(user_data.password_hash)):
         raise DomainException(
             401,
-            ErrorCode.AUTHENTICATION_ERROR,
             "Invalid Credentials",
-            ErrorDetail(resource="users"),
+            [FieldViolation(
+            	field="password",
+             	message="password doesnt match"
+            )]
         )
 
     refresh_token_data = (
@@ -36,9 +36,7 @@ def login(email: str, password: str, db: Session) -> LoginResponse:
     if refresh_token_data is not None and refresh_token_data.expires_at > datetime.now(timezone.utc):
         raise DomainException(
             409,
-            ErrorCode.CONFLICT_ERROR,
             "User is already logged in",
-            ErrorDetail(resource="users"),
         )
 
     access_token = create_access_token(user_data.id)
