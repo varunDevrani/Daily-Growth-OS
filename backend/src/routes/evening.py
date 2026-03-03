@@ -14,7 +14,7 @@ def create_evening(request:EveningCreate,  current_user=Depends(get_current_user
     return create_evening_controller(request=request, db=db, user_id=current_user)
 
 
-@router.patch("/{evening_id}")
+@router.put("/{evening_id}")
 def update_evening(evening_id: UUID, request:EveningUpdate, current_user=Depends(get_current_user), db:Session = Depends(get_db)):
     return update_evening_controller(evening_id=evening_id, request=request, db=db, user_id=current_user)
 

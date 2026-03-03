@@ -1,4 +1,4 @@
-from  pydantic import BaseModel
+from  pydantic import BaseModel , Field
 from datetime import date,datetime
 from uuid import UUID
 
@@ -8,16 +8,16 @@ class EveningCreate(BaseModel):
     win: str
     mistake: str
     distraction: str
-    mood_rating: int
-    energy_rating: int
+    mood_rating: int = Field(..., ge=1, le=5)
+    energy_rating: int = Field(..., ge=1, le=5)
     lesson: str
 
 class EveningUpdate(BaseModel):
-    win: str
+    win: str 
     mistake: str
     distraction: str
-    mood_rating: int
-    energy_rating: int
+    mood_rating: int = Field(..., ge=1, le=5)
+    energy_rating: int = Field(..., ge=1, le=5)
     lesson: str
 
 class EveningResponse(BaseModel):
