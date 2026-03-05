@@ -1,15 +1,17 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, ConfigDict
 from datetime import time
 from typing import Union, Annotated
 
 class SettingsResponse(BaseModel):
-    morning_start_time: time
-    morning_end_time: time
-    evening_start_time: time
-    evening_end_time: time
-    is_morning_reminder_enabled: bool
-    is_evening_reminder_enabled: bool
-    total_target_activities: int
+	model_config = ConfigDict(from_attributes=True)
+	
+	morning_start_time: time
+	morning_end_time: time
+	evening_start_time: time
+	evening_end_time: time
+	is_morning_reminder_enabled: bool
+	is_evening_reminder_enabled: bool
+	total_target_activities: int
     
     
 class SettingsCreateRequest(BaseModel):
