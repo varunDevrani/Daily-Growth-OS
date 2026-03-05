@@ -26,7 +26,7 @@ class SettingsCreateRequest(BaseModel):
 	@model_validator(mode="after")
 	def end_from_start(self):
 		if self.morning_end_time < self.morning_start_time or self.evening_end_time < self.evening_start_time:
-			raise ValueError("")
+			raise ValueError("morning end time must be after morning start time, and evening end time must be after evening start time")
 		return self
     	
     
