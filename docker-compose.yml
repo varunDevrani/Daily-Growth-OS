@@ -1,0 +1,35 @@
+services:
+
+  db:
+    image: postgres:15
+    container_name: growthos_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: growthos
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: growthos_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/growthos
+
+  frontend:
+    build: ./frontend
+    container_name: growthos_frontend
+    ports:
+      - "3000:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
