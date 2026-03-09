@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 
 from sqlalchemy import DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
 from src.models.mixins.id import IDMixin
@@ -16,7 +16,9 @@ class User(IDMixin, TimestampMixin, Base):
 
     last_name: Mapped[Union[str, None]] = mapped_column()
 
-    email: Mapped[str] = mapped_column()
+    email: Mapped[str] = mapped_column(
+    	index=True
+    )
 
     password_hash: Mapped[str] = mapped_column()
 
@@ -28,4 +30,9 @@ class User(IDMixin, TimestampMixin, Base):
 
     deleted_at: Mapped[Union[datetime, None]] = mapped_column(
     	DateTime(timezone=True)
+    )
+
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
+   		back_populates="user",
+    	cascade="all, delete-orphan"
     )

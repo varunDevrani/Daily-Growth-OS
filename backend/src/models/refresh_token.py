@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import UUID, DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
 from src.models.mixins.id import IDMixin
@@ -15,7 +15,9 @@ class RefreshToken(IDMixin, TimestampMixin, Base):
 		ForeignKey("users.id")
 	)
 
-	token: Mapped[str] = mapped_column()
+	token: Mapped[str] = mapped_column(
+		index=True
+	)
 
 	issued_at: Mapped[datetime] = mapped_column(
 		DateTime(timezone=True)
@@ -23,4 +25,8 @@ class RefreshToken(IDMixin, TimestampMixin, Base):
 
 	expires_at: Mapped[datetime] = mapped_column(
 		DateTime(timezone=True)
+	)
+
+	user: Mapped["User"] = relationship(
+		back_populates="refresh_tokens"
 	)

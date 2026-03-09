@@ -1,14 +1,18 @@
 from fastapi import FastAPI
-from src.models.base import Base
+
 from src.database.database import engine
+from src.exceptions import register_exception_handlers
+from src.models.base import Base
 from src.routes.auth import router as auth_router
 
-app = FastAPI(title="Daily Growth OS")
+app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
 
-app.include_router(auth_router)
+Base.metadata.create_all(
+	bind=engine
+)
 
-@app.get("/")
-def health_check():
-    return {"status": "Backend running"}
+
+register_exception_handlers(app)
+
+app.include_router(auth_router, prefix="/api/v1")

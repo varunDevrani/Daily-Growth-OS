@@ -1,30 +1,28 @@
-from src.schemas.auth import SignupRequest, LoginRequest
-from src.controllers.auth_controllers import signup_controller
-from src.database.database import get_db
-from fastapi import APIRouter, Request, Response, Depends
+from http import HTTPStatus
+
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import src.controllers.login as controllers
+import src.controllers.auth as controllers
+from src.dependencies.database import get_db
+from src.schemas.api_response import SuccessResponse
+from src.schemas.auth import LoginRequest, SignupRequest, TokenResponse
+from src.schemas.user import UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-#FixFix: No response model definitions for OpenAPI docs
-@router.post("/signup")
-def signup(request: SignupRequest, db: Session = Depends(get_db)):
-    return signup_controller(request, db)
+
+@router.post(
+    "/signup",
+    status_code=HTTPStatus.CREATED,
+    response_model=SuccessResponse[UserResponse],
+)
+def signup(payload: SignupRequest, db: Session = Depends(get_db)):
+    return controllers.signup(payload, db)
 
 
-#FixFix: no need to add request and response.
-@router.post("/login")
-def login(
-    request: Request,
-    response: Response,
-    payload: LoginRequest,
-    db: Session = Depends(get_db)
-):
-    return controllers.login(
-        request,
-        response,
-        payload,
-        db
-    )
+@router.post(
+    "/login", status_code=HTTPStatus.OK, response_model=SuccessResponse[TokenResponse]
+)
+def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    return controllers.login(payload, db)

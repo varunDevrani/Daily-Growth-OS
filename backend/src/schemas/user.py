@@ -1,12 +1,10 @@
 from typing import Union
 from uuid import UUID
 
-from pydantic import ConfigDict
-
-from src.schemas.base import BaseSchema
+from pydantic import BaseModel, ConfigDict
 
 
-class UserResponse(BaseSchema):
+class UserResponse(BaseModel):
 	model_config = ConfigDict(from_attributes=True)
 
 	id: UUID
