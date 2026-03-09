@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr, field_validator
 
+#FixFix: No password strength validation (length, complexity)
+#FixFix: No response schemas defined (SignupResponse, LoginResponse)
+#FixFix: confirm_password field exists but is never used after validation
 class SignupRequest(BaseModel):
     
     email: EmailStr

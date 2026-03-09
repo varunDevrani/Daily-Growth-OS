@@ -1,9 +1,13 @@
+#FixFix: Integer, String imported - Integer unused
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UUID
 from datetime import datetime
 import uuid
 
 from src.database.base import Base
 
+#FixFix: No relationship defined to User model (no ORM navigation)
+#FixFix: No index on user_id column (will cause slow lookups)
+#FixFix: No index on token column (will cause slow token lookups)
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 

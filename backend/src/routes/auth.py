@@ -8,11 +8,13 @@ import src.controllers.login as controllers
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+#FixFix: No response model definitions for OpenAPI docs
 @router.post("/signup")
 def signup(request: SignupRequest, db: Session = Depends(get_db)):
     return signup_controller(request, db)
 
 
+#FixFix: no need to add request and response.
 @router.post("/login")
 def login(
     request: Request,

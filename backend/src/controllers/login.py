@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.schemas.auth import LoginRequest
 import src.services.login as services
 
-
+#FixFix: request and response are not getting used.
 def login(
     request: Request,
     response: Response,
@@ -23,6 +23,7 @@ def login(
         return {
             "message": "email not found",
             "success": False,
+            #FixFix:  The status_code in the response body has no effect. FastAPI will return HTTP 200.
             "status_code": 404,
         }
     
@@ -32,7 +33,7 @@ def login(
             "success": False,
             "status_code": 401,
         }
-    
+    #FixFix: why success is false on login?
     return {
         "message": "user logged in",
         "success": False,

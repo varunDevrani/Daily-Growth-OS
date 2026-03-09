@@ -9,7 +9,9 @@ def signup_user(
     password: str
 ):
     #here i am Checking  duplicate user in the db
+    # FixFix: Same query in the login.
     if db.query(User).filter(User.email == email).first():
+        # FixFix: service layer is raising FastAPI HTTPExceptions, They should return domain errors/exceptions that controllers translate to HTTP responses
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="user already exists"

@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+#FixFix: Duplicate .env loading in jwt handler, Load dotenv once in main.py or a dedicated config.py before any imports.
+
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -16,5 +18,5 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()
+        db.close() #FixFix: No rollback if exception occured?
         

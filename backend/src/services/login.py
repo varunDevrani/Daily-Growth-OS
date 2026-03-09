@@ -19,6 +19,7 @@ def login(
     password: str,
     db: Session
 ):
+    #FixFix: remove this deadcode.
     # stmt = select(UserModel).where(UserModel.email == email)
     # user_data = db.execute(stmt).scalar_one_or_none()
 
@@ -26,7 +27,7 @@ def login(
 
     if user_data is None:
         return LoginErrors.EMAIL_NOT_FOUND
-    
+    #FixFix: == False is non-idiomatic Python
     if verify_password(password, user_data.password_hash) == False:
         return LoginErrors.PASSWORD_MISMATCH
 
@@ -42,6 +43,7 @@ def login(
 
     db.add(refresh_token_data)
     db.commit()
+    #FixFix:  If db.commit() fails, refresh token is not stored but access token was already created. No rollback.
     db.refresh(refresh_token_data)
 
     return (access_token, refresh_token)

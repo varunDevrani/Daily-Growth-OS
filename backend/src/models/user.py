@@ -1,7 +1,9 @@
+#FixFix: Integer is never used.
 from sqlalchemy import Column, Integer, String, DateTime, UUID
 from datetime import datetime
 from src.database.base import Base
 import uuid
+#FixFix: Duplicate UUID import and default, you should create base model with UUID PK
 
 class User(Base):
     __tablename__ = "users"
@@ -14,6 +16,8 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     profile_pic_url = Column(String)
 
+    #FixFix: Duplicate datetime.utcnow Defaults, Create timestamp mixin,
     created_at = Column(DateTime, default=datetime.utcnow)
+    #FixFix: has no onupdate trigger - will never auto-update
     updated_at = Column(DateTime, default=datetime.utcnow)
     deleted_at = Column(DateTime)
