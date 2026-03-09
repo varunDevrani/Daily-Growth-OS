@@ -1,22 +1,26 @@
-#FixFix: Integer, String imported - Integer unused
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UUID
 from datetime import datetime
-import uuid
 
-from src.database.base import Base
+from sqlalchemy import UUID, DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
 
-#FixFix: No relationship defined to User model (no ORM navigation)
-#FixFix: No index on user_id column (will cause slow lookups)
-#FixFix: No index on token column (will cause slow token lookups)
-class RefreshToken(Base):
-    __tablename__ = "refresh_tokens"
+from src.models.base import Base
+from src.models.mixins.id import IDMixin
+from src.models.mixins.timestamp import TimestampMixin
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
 
-    token = Column(String, nullable=False)
-    issued_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    expires_at = Column(DateTime, nullable=False)
-    revoked_at = Column(DateTime)
+class RefreshToken(IDMixin, TimestampMixin, Base):
+	__tablename__ = "refresh_tokens"
 
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+	user_id: Mapped[UUID] = mapped_column(
+		ForeignKey("users.id")
+	)
+
+	token: Mapped[str] = mapped_column()
+
+	issued_at: Mapped[datetime] = mapped_column(
+		DateTime(timezone=True)
+	)
+
+	expires_at: Mapped[datetime] = mapped_column(
+		DateTime(timezone=True)
+	)

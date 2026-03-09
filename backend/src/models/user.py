@@ -1,23 +1,31 @@
-#FixFix: Integer is never used.
-from sqlalchemy import Column, Integer, String, DateTime, UUID
 from datetime import datetime
-from src.database.base import Base
-import uuid
-#FixFix: Duplicate UUID import and default, you should create base model with UUID PK
+from typing import Union
 
-class User(Base):
+from sqlalchemy import DateTime
+from sqlalchemy.orm import Mapped, mapped_column
+
+from src.models.base import Base
+from src.models.mixins.id import IDMixin
+from src.models.mixins.timestamp import TimestampMixin
+
+
+class User(IDMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    first_name: Mapped[Union[str, None]] = mapped_column()
 
-    first_name = Column(String)
-    last_name = Column(String)
-    email = Column(String, nullable=False, unique=True)
-    password_hash = Column(String, nullable=False)
-    profile_pic_url = Column(String)
+    last_name: Mapped[Union[str, None]] = mapped_column()
 
-    #FixFix: Duplicate datetime.utcnow Defaults, Create timestamp mixin,
-    created_at = Column(DateTime, default=datetime.utcnow)
-    #FixFix: has no onupdate trigger - will never auto-update
-    updated_at = Column(DateTime, default=datetime.utcnow)
-    deleted_at = Column(DateTime)
+    email: Mapped[str] = mapped_column()
+
+    password_hash: Mapped[str] = mapped_column()
+
+    profile_pic_url: Mapped[Union[str, None]] = mapped_column()
+
+    is_verfied: Mapped[bool] = mapped_column(
+    	default=False
+    )
+
+    deleted_at: Mapped[Union[datetime, None]] = mapped_column(
+    	DateTime(timezone=True)
+    )
