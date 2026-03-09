@@ -38,9 +38,5 @@ def login(
         "message": "user logged in",
         "success": False,
         "status_code": 200,
-        "data": {
-            "access_token": service_data[0],
-            "refresh_token": service_data[1],
-            "type": "bearer"
-        }
+        "data": service_data.model_dump(mode="json")
     }

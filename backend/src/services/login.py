@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.models.user import User as UserModel
 from src.models.refresh_token import RefreshToken as RefreshTokenModel
+from src.schemas.auth import TokenResponse
 from src.utils.hashing import verify_password
 from src.utils.jwt_handler import create_access_token, create_refresh_token
 
@@ -46,4 +47,8 @@ def login(
     #FixFix:  If db.commit() fails, refresh token is not stored but access token was already created. No rollback.
     db.refresh(refresh_token_data)
 
-    return (access_token, refresh_token)
+    return TokenResponse(
+    	token_type="Bearer",
+     	access_token=access_token,
+      	refresh_token=refresh_token
+    )
