@@ -1,19 +1,39 @@
-from sqlalchemy import Column, Integer, String, DateTime, UUID
 from datetime import datetime
-from src.database.base import Base
-import uuid
+from typing import List, Union
 
-class User(Base):
+from sqlalchemy import DateTime
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.models.base import Base
+from src.models.mixins.id import IDMixin
+from src.models.mixins.timestamp import TimestampMixin
+
+
+class User(IDMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    first_name: Mapped[Union[str, None]] = mapped_column()
 
-    first_name = Column(String)
-    last_name = Column(String)
-    email = Column(String, nullable=False, unique=True)
-    password_hash = Column(String, nullable=False)
-    profile_pic_url = Column(String)
+    last_name: Mapped[Union[str, None]] = mapped_column()
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
-    deleted_at = Column(DateTime)
+    email: Mapped[str] = mapped_column(
+    	unique=True,
+    	index=True
+    )
+
+    password_hash: Mapped[str] = mapped_column()
+
+    profile_pic_url: Mapped[Union[str, None]] = mapped_column()
+
+    is_verified: Mapped[bool] = mapped_column(
+    	default=False
+    )
+
+    deleted_at: Mapped[Union[datetime, None]] = mapped_column(
+    	DateTime(timezone=True)
+    )
+
+    refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
+   		back_populates="user",
+    	cascade="all, delete-orphan"
+    )

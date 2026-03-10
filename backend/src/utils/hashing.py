@@ -18,6 +18,3 @@ def verify_password(plain_password: str, stored_hash: str) -> bool:
     
     #Comparing
     return bcrypt.checkpw(password_bytes, stored_hash_bytes)
-
-# a="rohit"
-# print(hash_password(a))

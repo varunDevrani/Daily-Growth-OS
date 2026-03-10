@@ -1,66 +1,57 @@
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Tuple, Union
+from uuid import UUID
+
 import jwt
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Optional, Tuple, Any
+from pydantic import BaseModel
 
-import os
-from dotenv import load_dotenv
+from src.core.config import settings
 
-load_dotenv()
 
-JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "hello")
-ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
-REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+class JWTToken(str, Enum):
+    ACCESS_TOKEN = "access"
+    REFRESH_TOKEN = "refresh"
+
+
+class JWTPayload(BaseModel):
+    user_id: str
+    exp: datetime
+    iat: datetime
+    token_type: str
+
 
 ALGORITHM = "HS256"
 
 
-def create_access_token(user_id: int) -> str:
-	expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+def create_token(
+    user_id: UUID,
+    token_type: JWTToken
+) -> Tuple[JWTPayload, str]:
 
-	payload = {
-		"user_id": str(user_id),
-		"exp": expire,
-		"iat": datetime.now(timezone.utc),
-		"type": "access"
-	}
-
-	return jwt.encode(payload, JWT_SECRET_KEY, algorithm=ALGORITHM)
-
-
-def create_refresh_token(user_id: int) -> Tuple[Dict[str, Any], str]:
-	expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-
-	payload = {
-		"user_id": str(user_id),
-		"exp": expire,
-		"iat": datetime.now(timezone.utc),
-		"type": "refresh"
-	}
-
-	return (payload, jwt.encode(payload, JWT_SECRET_KEY, algorithm=ALGORITHM))
+    match token_type:
+        case JWTToken.ACCESS_TOKEN:
+            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        case JWTToken.REFRESH_TOKEN:
+            expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
 
 
-def decode_token(token: str) -> Optional[Dict]:
-	try:
-		payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
-		return payload
-	except jwt.ExpiredSignatureError:
-		print("Token Expired")
-		return None
-	except jwt.InvalidTokenError:
-		print("Invalid Token")
-		return None
-	
+    payload = JWTPayload(
+        user_id=str(user_id),
+        exp=expire,
+        iat=datetime.now(timezone.utc),
+        token_type=token_type.value
+    )
 
-def verify_access_token(token: str) -> Optional[int]:
-	payload = decode_token(token)
-	if payload and payload["type"] == "access":
-		return int(payload["user_id"])
-	return None
+    return (payload, jwt.encode(payload.model_dump(), settings.JWT_SECRET_KEY, ALGORITHM))
 
 
-def verify_refresh_token(token: str) -> Optional[int]:
-	payload = decode_token(token)
-	if payload and payload["type"] == "refresh":
-		return int(payload["user_id"])
-	return None
+def decode_token(
+    token: str
+) -> Union[JWTPayload, None]:
+
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, [ALGORITHM])
+        return JWTPayload(**payload)
+    except jwt.PyJWTError:
+        return None
