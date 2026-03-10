@@ -12,7 +12,6 @@ from src.core.config import settings
 class JWTToken(str, Enum):
     ACCESS_TOKEN = "access"
     REFRESH_TOKEN = "refresh"
-    OTP_TOKEN = "otp"
 
 
 class JWTPayload(BaseModel):
@@ -35,10 +34,6 @@ def create_token(
             expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         case JWTToken.REFRESH_TOKEN:
             expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-        case JWTToken.OTP_TOKEN:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.OTP_CODE_EXPIRE_MINUTES)
-        case _:
-            raise ValueError("Not a valid token type!")
 
 
     payload = JWTPayload(
@@ -58,5 +53,5 @@ def decode_token(
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, [ALGORITHM])
         return JWTPayload(**payload)
-    except jwt.PyJWTError as exception:
+    except jwt.PyJWTError:
         return None
