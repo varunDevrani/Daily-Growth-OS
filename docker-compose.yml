@@ -22,6 +22,8 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/growthos
+    volumes:
+      - ./backend:/app:Z
 
   frontend:
     build: ./frontend
@@ -30,6 +32,9 @@ services:
       - "3000:5173"
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/app:Z
+      - /app/node_modules
 
 volumes:
   postgres_data:
