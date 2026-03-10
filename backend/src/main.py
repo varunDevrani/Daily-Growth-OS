@@ -15,4 +15,10 @@ Base.metadata.create_all(
 
 register_exception_handlers(app)
 
+@app.get("/")
+def health_check():
+    return {
+    	"status": "backend running"
+    }
+
 app.include_router(auth_router, prefix="/api/v1")

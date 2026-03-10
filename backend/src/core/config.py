@@ -6,9 +6,7 @@ class Settings(BaseSettings):
 	JWT_SECRET_KEY: str
 	ACCESS_TOKEN_EXPIRE_MINUTES: int
 	REFRESH_TOKEN_EXPIRE_DAYS: int
-	
-	OTP_CODE_EXPIRE_MINUTES: int
-	
+		
 	model_config = SettingsConfigDict(
 		env_file=".env",
 		env_file_encoding="utf-8",

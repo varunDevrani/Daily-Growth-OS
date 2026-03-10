@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from http import HTTPStatus
 
 from sqlalchemy import select
@@ -43,24 +42,11 @@ def login(
 
 	stmt = select(User).where(User.email == payload.email)
 	user_data = db.scalar(stmt)
-	if user_data is None:
+
+	if user_data is None or not verify_password(payload.password, user_data.password_hash):
 		raise DomainException(
 			status_code=HTTPStatus.UNAUTHORIZED,
 			message="Invalid Credentials",
-		)
-
-	if not verify_password(payload.password, user_data.password_hash):
-		raise DomainException(
-			status_code=401,
-			message="Invalid Credentials",
-		)
-
-	stmt = select(RefreshToken).where(RefreshToken.user_id == user_data.id)
-	refresh_token_data = db.scalar(stmt)
-	if refresh_token_data is not None and refresh_token_data.expires_at > datetime.now(timezone.utc):
-		raise DomainException(
-			status_code=HTTPStatus.CONFLICT,
-			message="User is already logged in"
 		)
 
 	_, access_token = create_token(user_data.id, JWTToken.ACCESS_TOKEN)
