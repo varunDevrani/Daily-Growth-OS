@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models.base import Base
 from src.models.mixins.id import IDMixin
 from src.models.mixins.timestamp import TimestampMixin
-
+from src.models.evening import Evening
 
 class User(IDMixin, TimestampMixin, Base):
     __tablename__ = "users"
@@ -37,3 +37,7 @@ class User(IDMixin, TimestampMixin, Base):
    		back_populates="user",
     	cascade="all, delete-orphan"
     )
+    evenings: Mapped[List["Evening"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )   
