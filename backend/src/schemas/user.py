@@ -1,7 +1,9 @@
 from typing import Union
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+from src.schemas.base import BaseSchema
 
 
 class UserResponse(BaseModel):
@@ -12,3 +14,16 @@ class UserResponse(BaseModel):
 	last_name: Union[str, None] = None
 	email: str
 	profile_pic_url: Union[str, None] = None
+
+
+class UserPartialUpdateRequest(BaseSchema):
+	first_name: Union[str, None] = Field(
+		default=None,
+		min_length=2,
+		max_length=20
+	)
+	last_name: Union[str, None] = Field(
+		default=None,
+		min_length=True,
+		max_length=True
+	)
