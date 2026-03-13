@@ -10,6 +10,7 @@ from src.models.morning_activity import MorningActivity
 from src.schemas.morning import MorningCreate, MorningUpdate, MorningResponse
 from src.schemas.morning_activity import MorningActivityResponse
 from src.exceptions import DomainException
+from src.schemas.morning_activity import MorningActivityCreate
 
 
 def create_morning(db: Session, user_id: UUID, payload: MorningCreate):
@@ -54,14 +55,14 @@ def create_morning(db: Session, user_id: UUID, payload: MorningCreate):
     return MorningResponse.model_validate(morning)
 
 
-def add_activity(db: Session, user_id: UUID, checkin_id: UUID, payload):
+def add_activity(db: Session, user_id: UUID, checkin_id: UUID, payload: MorningActivityCreate):
 
     stmt = select(Morning).where(
         Morning.id == checkin_id,
         Morning.user_id == user_id
     )
 
-    morning = db.scalar(stmt)
+    morning = db.execute(stmt).scalar_one_or_none()
 
     if not morning:
         raise DomainException(
@@ -90,7 +91,7 @@ def update_morning(db: Session, user_id: UUID, checkin_id: UUID, payload: Mornin
         Morning.user_id == user_id
     )
 
-    morning = db.scalar(stmt)
+    morning = db.execute(stmt).scalar_one_or_none()
 
     if not morning:
         raise DomainException(
@@ -110,7 +111,7 @@ def update_morning(db: Session, user_id: UUID, checkin_id: UUID, payload: Mornin
                 MorningActivity.checkin_id == checkin_id
             )
 
-            activity = db.scalar(stmt)
+            activity = db.execute(stmt).scalar_one_or_none()
 
             if not activity:
                 continue
@@ -133,7 +134,7 @@ def get_morning(db: Session, user_id: UUID, target_date: date):
         Morning.date == target_date
     )
 
-    morning = db.scalar(stmt)
+    morning = db.execute(stmt).scalar_one_or_none()
 
     if not morning:
         raise DomainException(
@@ -151,7 +152,7 @@ def delete_activity(db: Session, user_id: UUID, activity_id: UUID):
         Morning.user_id == user_id
     )
 
-    activity = db.scalar(stmt)
+    activity = db.execute(stmt).scalar_one_or_none()
 
     if not activity:
         raise DomainException(
@@ -160,3 +161,5 @@ def delete_activity(db: Session, user_id: UUID, activity_id: UUID):
         )
 
     db.delete(activity)
+    db.flush()
+    return MorningActivityResponse.model_validate(activity)
