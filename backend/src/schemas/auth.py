@@ -33,3 +33,8 @@ class TokenResponse(BaseModel):
 	token_type: str
 	access_token: str
 	refresh_token: Union[str, None] = None
+
+
+class RefreshTokenRequest(BaseSchema):
+	refresh_token: str
+
