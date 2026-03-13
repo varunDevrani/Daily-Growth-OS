@@ -15,7 +15,7 @@ def create_evening(db: Session , user_id: UUID, payload: EveningCreate):
     if existing: 
         raise DomainException(
             status_code=HTTPStatus.CONFLICT,
-            message=f"Evening entry for date {payload.date} already exists.")
+            message=f"Evening entry for date {today} already exists.")
     evening=Evening(
         user_id=user_id,
         win=payload.win,
