@@ -3,10 +3,17 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
+class ProfilePicUpdateRequest(BaseModel):
+	profile_pic_url: str
+
+
+class UserProfileResponse(BaseModel):
+	model_config = ConfigDict(from_attributes=True)
+	profile_pic_url: Union[str]
+
 
 class UserResponse(BaseModel):
 	model_config = ConfigDict(from_attributes=True)
-
 	id: UUID
 	first_name: Union[str, None] = None
 	last_name: Union[str, None] = None
