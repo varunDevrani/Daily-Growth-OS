@@ -5,12 +5,15 @@ from sqlalchemy.orm import Session
 import src.services.morning as Service
 
 from src.schemas.api_response import SuccessResponse
-from src.schemas.morning import MorningCreate, MorningUpdate
-from src.schemas.morning_activity import MorningActivityCreate
+from src.schemas.morning import MorningCreate, MorningUpdate, MorningResponse
+from src.schemas.morning_activity import MorningActivityCreate, MorningActivityResponse
 
 
-def create_morning(payload: MorningCreate, db: Session, user_id: UUID):
-
+def create_morning(
+    payload: MorningCreate,
+    db: Session,
+    user_id: UUID
+) -> SuccessResponse:
     morning = Service.create_morning(db, user_id, payload)
 
     return SuccessResponse(
@@ -19,8 +22,12 @@ def create_morning(payload: MorningCreate, db: Session, user_id: UUID):
     )
 
 
-def add_activity(checkin_id: UUID, payload: MorningActivityCreate, db: Session, user_id: UUID):
-
+def add_activity(
+    checkin_id: UUID,
+    payload: MorningActivityCreate,
+    db: Session,
+    user_id: UUID
+) -> SuccessResponse:
     activity = Service.add_activity(db, user_id, checkin_id, payload)
 
     return SuccessResponse(
@@ -29,8 +36,12 @@ def add_activity(checkin_id: UUID, payload: MorningActivityCreate, db: Session, 
     )
 
 
-def update_morning(checkin_id: UUID, payload: MorningUpdate, db: Session, user_id: UUID):
-
+def update_morning(
+    checkin_id: UUID,
+    payload: MorningUpdate,
+    db: Session,
+    user_id: UUID
+) -> SuccessResponse:
     morning = Service.update_morning(db, user_id, checkin_id, payload)
 
     return SuccessResponse(
@@ -39,8 +50,11 @@ def update_morning(checkin_id: UUID, payload: MorningUpdate, db: Session, user_i
     )
 
 
-def get_morning(target_date: date, db: Session, user_id: UUID):
-
+def get_morning(
+    target_date: date,
+    db: Session,
+    user_id: UUID
+) -> SuccessResponse:
     morning = Service.get_morning(db, user_id, target_date)
 
     return SuccessResponse(
@@ -49,8 +63,11 @@ def get_morning(target_date: date, db: Session, user_id: UUID):
     )
 
 
-def delete_activity(activity_id: UUID, db: Session, user_id: UUID):
-
+def delete_activity(
+    activity_id: UUID,
+    db: Session,
+    user_id: UUID
+) -> SuccessResponse:
     Service.delete_activity(db, user_id, activity_id)
 
     return SuccessResponse(

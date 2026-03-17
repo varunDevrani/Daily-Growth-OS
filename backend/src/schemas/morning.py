@@ -15,7 +15,7 @@ class MorningCreate(BaseSchema):
 
     confidence_rating: int = Field(..., ge=1, le=5)
 
-    activities: List[MorningActivityCreate] = []
+    activities: List[MorningActivityCreate] = Field(default_factory=list)
 
 
 class MorningUpdate(BaseSchema):
