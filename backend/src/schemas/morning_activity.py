@@ -13,7 +13,7 @@ class MorningActivityCreate(BaseSchema):
 
 class MorningActivityUpdate(BaseSchema):
     id: UUID
-    title: str | None = None
+    title: Annotated[str | None, Field(min_length=1, max_length=100)] = None
     is_priority: bool | None = None
     is_habit: bool | None = None
     is_completed: bool | None = None

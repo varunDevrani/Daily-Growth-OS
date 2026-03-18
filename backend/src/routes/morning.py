@@ -9,8 +9,8 @@ from src.dependencies.auth import get_current_user
 
 import src.controllers.morning as controllers
 
-from src.schemas.morning import MorningCreate, MorningUpdate
-from src.schemas.morning_activity import MorningActivityCreate
+from src.schemas.morning import MorningCreate, MorningResponse, MorningUpdate
+from src.schemas.morning_activity import MorningActivityCreate, MorningActivityResponse
 from src.schemas.api_response import SuccessResponse
 
 router = APIRouter(prefix="/morning", tags=["Morning"])
@@ -19,54 +19,54 @@ router = APIRouter(prefix="/morning", tags=["Morning"])
 @router.post(
     "",
     status_code=HTTPStatus.CREATED,
-    response_model=SuccessResponse
+    response_model=SuccessResponse[MorningResponse]
 )
 def create_morning(
     payload: MorningCreate,
     db: Session = Depends(get_db),
     user_id=Depends(get_current_user)
-):
+) -> SuccessResponse[MorningResponse]:
     return controllers.create_morning(payload, db, user_id)
 
 
 @router.post(
     "/{checkin_id}/activities",
     status_code=HTTPStatus.CREATED,
-    response_model=SuccessResponse
+    response_model=SuccessResponse[MorningActivityResponse]
 )
 def add_activity(
     checkin_id: UUID,
     payload: MorningActivityCreate,
     db: Session = Depends(get_db),
     user_id=Depends(get_current_user)
-):
+) -> SuccessResponse[MorningActivityResponse]:
     return controllers.add_activity(checkin_id, payload, db, user_id)
 
 
 @router.patch(
     "/{checkin_id}",
     status_code=HTTPStatus.OK,
-    response_model=SuccessResponse
+    response_model=SuccessResponse[MorningResponse]
 )
 def update_morning(
     checkin_id: UUID,
     payload: MorningUpdate,
     db: Session = Depends(get_db),
     user_id=Depends(get_current_user)
-):
+) -> SuccessResponse[MorningResponse]:
     return controllers.update_morning(checkin_id, payload, db, user_id)
 
 
 @router.get(
     "/{target_date}",
     status_code=HTTPStatus.OK,
-    response_model=SuccessResponse
+    response_model=SuccessResponse[MorningResponse]
 )
 def get_morning(
     target_date: date,
     db: Session = Depends(get_db),
     user_id=Depends(get_current_user)
-):
+) -> SuccessResponse[MorningResponse]:
     return controllers.get_morning(target_date, db, user_id)
 
 
@@ -76,9 +76,9 @@ def get_morning(
     response_model=SuccessResponse
 )
 def delete_activity(
-    checkin_id: UUID,
     activity_id: UUID,
     db: Session = Depends(get_db),
     user_id=Depends(get_current_user)
-):
+) -> SuccessResponse:
     return controllers.delete_activity(activity_id, db, user_id)
+

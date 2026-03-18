@@ -6,7 +6,6 @@ from .mixins.timestamp import TimestampMixin
 from src.models.base import Base
 
 
-
 class Morning(IDMixin, TimestampMixin, Base):
     __tablename__ = "morning"
 
@@ -17,4 +16,3 @@ class Morning(IDMixin, TimestampMixin, Base):
     
     __table_args__ = (UniqueConstraint('user_id', 'date'),)
 
-from src.models.morning_activity import MorningActivity

@@ -10,7 +10,7 @@ from src.models.morning import Morning
 class MorningActivity(IDMixin, TimestampMixin, Base):
     __tablename__ = "morning_activity"
 
-    checkin_id: Mapped[UUID] = mapped_column(ForeignKey("morning.id"), nullable=False)
+    checkin_id: Mapped[UUID] = mapped_column(ForeignKey("morning.id"), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     is_priority: Mapped[bool] = mapped_column(nullable=False, default=False)
     is_habit: Mapped[bool] = mapped_column(nullable=False, default=False)

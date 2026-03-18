@@ -13,10 +13,10 @@ def create_morning(
     payload: MorningCreate,
     db: Session,
     user_id: UUID
-) -> SuccessResponse:
+) -> SuccessResponse[MorningResponse]:
     morning = Service.create_morning(db, user_id, payload)
 
-    return SuccessResponse(
+    return SuccessResponse[MorningResponse](
         message="Morning created successfully",
         data=morning
     )
@@ -27,10 +27,10 @@ def add_activity(
     payload: MorningActivityCreate,
     db: Session,
     user_id: UUID
-) -> SuccessResponse:
+) -> SuccessResponse[MorningActivityResponse]:
     activity = Service.add_activity(db, user_id, checkin_id, payload)
 
-    return SuccessResponse(
+    return SuccessResponse[MorningActivityResponse](
         message="Activity added",
         data=activity
     )
@@ -41,10 +41,10 @@ def update_morning(
     payload: MorningUpdate,
     db: Session,
     user_id: UUID
-) -> SuccessResponse:
+) -> SuccessResponse[MorningResponse]:
     morning = Service.update_morning(db, user_id, checkin_id, payload)
 
-    return SuccessResponse(
+    return SuccessResponse[MorningResponse](
         message="Morning updated",
         data=morning
     )
@@ -54,10 +54,10 @@ def get_morning(
     target_date: date,
     db: Session,
     user_id: UUID
-) -> SuccessResponse:
+) -> SuccessResponse[MorningResponse]:
     morning = Service.get_morning(db, user_id, target_date)
 
-    return SuccessResponse(
+    return SuccessResponse[MorningResponse](
         message="Morning retrieved",
         data=morning
     )

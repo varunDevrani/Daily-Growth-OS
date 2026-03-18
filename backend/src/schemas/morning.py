@@ -1,6 +1,6 @@
 from datetime import date
 from uuid import UUID
-from typing import List
+from typing import Annotated, List
 
 from pydantic import ConfigDict, Field
 from src.schemas.base import BaseSchema
@@ -12,20 +12,17 @@ from src.schemas.morning_activity import (
 
 
 class MorningCreate(BaseSchema):
-
-    confidence_rating: int = Field(..., ge=1, le=5)
-
+    confidence_rating: Annotated[int, Field(ge=1, le=5)]
     activities: List[MorningActivityCreate] = Field(default_factory=list)
 
 
 class MorningUpdate(BaseSchema):
 
-    confidence_rating: int | None = None
+    confidence_rating: Annotated[int | None, Field(ge=1, le=5)] = None
     activities: list[MorningActivityUpdate] | None = None
 
 
 class MorningResponse(BaseSchema):
-
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
@@ -33,3 +30,4 @@ class MorningResponse(BaseSchema):
     date: date
     confidence_rating: int
     activities: list[MorningActivityResponse]
+

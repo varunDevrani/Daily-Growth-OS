@@ -14,7 +14,7 @@ from src.schemas.morning_activity import MorningActivityResponse, MorningActivit
 from src.exceptions import DomainException
 
 
-def get_morning_or_404(db: Session, user_id: UUID, checkin_id: UUID):
+def get_morning_or_404(db: Session, user_id: UUID, checkin_id: UUID) -> Morning:
     stmt = select(Morning).where(
         Morning.id == checkin_id,
         Morning.user_id == user_id
@@ -30,7 +30,7 @@ def get_morning_or_404(db: Session, user_id: UUID, checkin_id: UUID):
     return morning
 
 
-def create_morning(db: Session, user_id: UUID, payload: MorningCreate):
+def create_morning(db: Session, user_id: UUID, payload: MorningCreate) -> MorningResponse:
     today = date.today()
 
     stmt = select(Morning).where(
@@ -75,7 +75,7 @@ def add_activity(
     user_id: UUID,
     checkin_id: UUID,
     payload: MorningActivityCreate
-):
+) -> MorningActivityResponse:
     get_morning_or_404(db, user_id, checkin_id)
 
     activity = MorningActivity(
@@ -97,7 +97,7 @@ def update_morning(
     user_id: UUID,
     checkin_id: UUID,
     payload: MorningUpdate
-):
+) -> MorningResponse:
     morning = get_morning_or_404(db, user_id, checkin_id)
 
     # update rating
@@ -118,7 +118,7 @@ def update_morning(
             if not activity:
                 continue
 
-            update_data = activity_update.model_dump(exclude_unset=True)
+            update_data = activity_update.model_dump(exclude_unset=True, exclude_none=True)
 
             update_data.pop("id", None)
 
@@ -131,7 +131,7 @@ def update_morning(
     return MorningResponse.model_validate(morning)
 
 
-def get_morning(db: Session, user_id: UUID, target_date: date):
+def get_morning(db: Session, user_id: UUID, target_date: date) -> MorningResponse:
     stmt = select(Morning).where(
         Morning.user_id == user_id,
         Morning.date == target_date
@@ -148,7 +148,7 @@ def get_morning(db: Session, user_id: UUID, target_date: date):
     return MorningResponse.model_validate(morning)
 
 
-def delete_activity(db: Session, user_id: UUID, activity_id: UUID):
+def delete_activity(db: Session, user_id: UUID, activity_id: UUID) -> None:
     stmt = select(MorningActivity).join(Morning).where(
         MorningActivity.id == activity_id,
         Morning.user_id == user_id
@@ -161,10 +161,6 @@ def delete_activity(db: Session, user_id: UUID, activity_id: UUID):
             status_code=HTTPStatus.NOT_FOUND,
             message="Activity not found"
         )
-
-    response = MorningActivityResponse.model_validate(activity)
-
+    
     db.delete(activity)
     db.flush()
-
-    return response
