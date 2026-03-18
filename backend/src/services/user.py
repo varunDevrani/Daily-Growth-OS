@@ -24,4 +24,8 @@ def delete_user(
 	user: User,
 	db: Session
 ) -> None:
+	for token in user.refresh_tokens:
+		db.delete(token)
+        
 	user.deleted_at = datetime.now(timezone.utc)
+	db.flush()

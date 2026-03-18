@@ -1,7 +1,7 @@
 from typing import Union
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from src.schemas.base import BaseSchema
 
@@ -12,7 +12,7 @@ class UserResponse(BaseModel):
 	id: UUID
 	first_name: Union[str, None] = None
 	last_name: Union[str, None] = None
-	email: str
+	email: EmailStr
 	profile_pic_url: Union[str, None] = None
 
 

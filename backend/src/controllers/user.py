@@ -18,7 +18,7 @@ def partial_update_user(
 	)
 
 	return SuccessResponse[UserResponse](
-		message=f"user[{user.id}] patched successfully",
+		message="User updated successfully",
 		data=user_data
 	)
 

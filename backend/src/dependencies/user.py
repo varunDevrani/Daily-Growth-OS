@@ -15,7 +15,7 @@ def get_user_or_404(
 	user_id: UUID = Depends(get_current_user),
     db: Session = Depends(get_db)
 ) -> User:
-	stmt = select(User).where(User.id == user_id)
+	stmt = select(User).where(User.id == user_id, User.deleted_at.is_(None))
 	user_data = db.scalar(stmt)
 	if user_data is None:
 		raise DomainException(
