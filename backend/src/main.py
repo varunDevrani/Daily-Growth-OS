@@ -8,17 +8,15 @@ from src.routes.auth import router as auth_router
 app = FastAPI()
 
 
-Base.metadata.create_all(
-	bind=engine
-)
+Base.metadata.create_all(bind=engine)
 
 
 register_exception_handlers(app)
 
+
 @app.get("/")
 def health_check():
-    return {
-    	"status": "backend running"
-    }
+    return {"status": "backend running"}
+
 
 app.include_router(auth_router, prefix="/api/v1")
