@@ -13,7 +13,7 @@ class RefreshToken(IDMixin, TimestampMixin, Base):
 	__tablename__ = "refresh_tokens"
 
 	user_id: Mapped[uuid.UUID] = mapped_column(
-		ForeignKey("users.id"),
+		ForeignKey("users.id", ondelete="CASCADE"),
 		index=True
 	)
 

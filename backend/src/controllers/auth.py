@@ -40,7 +40,7 @@ def logout(
 	payload: RefreshTokenRequest,
 	db: Session
 ) -> SuccessResponse:
-	_ = services.logout(
+	services.logout(
 		payload,
 		db
 	)

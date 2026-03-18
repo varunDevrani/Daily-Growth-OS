@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from enum import Enum
+from http import HTTPStatus
 from typing import Tuple, Union
 from uuid import UUID
 
@@ -7,6 +8,7 @@ import jwt
 from pydantic import BaseModel
 
 from src.core.config import settings
+from src.exceptions import DomainException
 
 
 class JWTToken(str, Enum):
@@ -55,3 +57,19 @@ def decode_token(
         return JWTPayload(**payload)
     except jwt.PyJWTError:
         return None
+
+
+
+def validate_token(
+	token: str,
+	token_type: JWTToken
+) -> UUID:
+	token_payload = decode_token(token)
+	if token_payload is None or token_payload.token_type != token_type:
+		raise DomainException(
+			status_code=HTTPStatus.UNAUTHORIZED,
+			message=f"Invalid {token_type} token",
+		)
+	
+	return UUID(token_payload.user_id)
+
