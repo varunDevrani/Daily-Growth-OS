@@ -18,7 +18,7 @@ def create_setting(
 	)
 	
 	return SuccessResponse[SettingResponse](
-		message=f"settings for user[{user.id}] fetched successfully",
+		message="settings created successfully",
 		data=setting_data
 	)
 
@@ -33,7 +33,7 @@ def get_setting(
 	)
 
 	return SuccessResponse[SettingResponse](
-		message=f"settings for user[{user.id}] fetched successfully",
+		message="settings fetched successfully",
 		data=setting_data
 	)
 
@@ -50,6 +50,6 @@ def partial_update_setting(
 	)
 
 	return SuccessResponse[SettingResponse](
-		message=f"settings for user[{user.id}] fetched successfully",
+		message="settings updated successfully",
 		data=setting_data
 	)

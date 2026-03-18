@@ -15,7 +15,8 @@ class Setting(IDMixin, TimestampMixin, Base):
 
 	user_id: Mapped[uuid.UUID] = mapped_column(
 		ForeignKey("users.id"),
-		unique=True
+		unique=True,
+		index=True
 	)
 
 	morning_start_time: Mapped[time] = mapped_column()
@@ -34,7 +35,7 @@ class Setting(IDMixin, TimestampMixin, Base):
 		default=False
 	)
 
-	last_password_changed_at: Mapped[Union[datetime, None]] = mapped_column()
+	last_password_changed_at: Mapped[Union[datetime, None]] = mapped_column(nullable=True)
 	
 	user: Mapped["User"] = relationship(
         back_populates="setting"

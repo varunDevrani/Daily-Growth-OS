@@ -19,7 +19,7 @@ def create_setting(
 	if setting_data is not None:
 		raise DomainException(
 			status_code=HTTPStatus.CONFLICT,
-			message=f"settings for user[{user.id}] already exists",
+			message="settings already exists",
 		)
 	
 	setting_data = Setting(
@@ -45,7 +45,7 @@ def get_setting(
 	if setting_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message=f"settings for user[{user.id}] not found",
+			message="settings not found",
 		)
 
 	return SettingResponse.model_validate(setting_data)
@@ -60,11 +60,10 @@ def partial_update_setting(
 
 	stmt = select(Setting).where(Setting.user_id == user.id)
 	setting_data = db.scalar(stmt)
-
 	if setting_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message=f"settings for user[{user.id}] not found",
+			message="settings not found",
 		)
 
 	updated_payload = payload.model_dump(exclude_unset=True, exclude_none=True)

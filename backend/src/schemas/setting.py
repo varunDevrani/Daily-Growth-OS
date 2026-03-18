@@ -22,13 +22,17 @@ class SettingCreateRequest(BaseSchema):
 	morning_end_time: time
 	evening_start_time: time
 	evening_end_time: time
-	is_morning_reminder_enabled: bool
-	is_evening_reminder_enabled: bool
-
+	is_morning_reminder_enabled: bool = True
+	is_evening_reminder_enabled: bool = True
+	
 	@model_validator(mode="after")
 	def end_from_start(self):
-		if self.morning_end_time <= self.morning_start_time or self.evening_end_time <= self.evening_start_time:
-			raise ValueError("morning_end_time must be after morning_start_time and evening_end_time must be after evening_start_time")
+		if self.morning_end_time <= self.morning_start_time:
+			raise ValueError("morning_end_time must be after morning_start_time")
+		
+		if self.evening_end_time <= self.evening_start_time:
+			raise ValueError("evening_end_time must be after evening_start_time")
+		
 		return self
 
 
@@ -42,10 +46,10 @@ class SettingPartialUpdateRequest(BaseSchema):
 	
 	@model_validator(mode="after")
 	def check_start_end_presence(self):
-		morning_start_time_present = bool(self.morning_start_time)
-		morning_end_time_present = bool(self.morning_end_time)
-		evening_start_time_present = bool(self.evening_start_time)
-		evening_end_time_present = bool(self.evening_end_time)
+		morning_start_time_present = self.morning_start_time is None
+		morning_end_time_present = self.morning_end_time is None
+		evening_start_time_present = self.evening_start_time is None
+		evening_end_time_present = self.evening_end_time is None
 		
 		if (morning_start_time_present ^ morning_end_time_present):
 			raise ValueError("both morning_start_time and morning_end_time must be present")
@@ -58,11 +62,11 @@ class SettingPartialUpdateRequest(BaseSchema):
     
 	@model_validator(mode="after")
 	def end_from_start(self):
-		if self.morning_start_time and self.morning_end_time:
+		if self.morning_start_time is not None and self.morning_end_time is not None:
 			if self.morning_end_time <= self.morning_start_time:
 				raise ValueError("morning_end_time must be after morning_start_time")
 			
-		if self.evening_start_time and self.evening_end_time:
+		if self.evening_start_time is not None and self.evening_end_time is not None:
 			if self.evening_end_time <= self.evening_start_time:
 				raise ValueError("evening_end_time must be after evening_start_time")
 		
