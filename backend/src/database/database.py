@@ -6,8 +6,4 @@ from src.core.config import settings
 
 engine = create_engine(settings.DATABASE_URL)
 
-sessionLocal = sessionmaker(
-	bind=engine,
-	autoflush=False,
-	autocommit=False
-)
+sessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)

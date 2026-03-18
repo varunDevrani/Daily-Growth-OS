@@ -16,24 +16,16 @@ class User(IDMixin, TimestampMixin, Base):
 
     last_name: Mapped[Union[str, None]] = mapped_column()
 
-    email: Mapped[str] = mapped_column(
-    	unique=True,
-    	index=True
-    )
+    email: Mapped[str] = mapped_column(unique=True, index=True)
 
     password_hash: Mapped[str] = mapped_column()
 
     profile_pic_url: Mapped[Union[str, None]] = mapped_column()
 
-    is_verified: Mapped[bool] = mapped_column(
-    	default=False
-    )
+    is_verified: Mapped[bool] = mapped_column(default=False)
 
-    deleted_at: Mapped[Union[datetime, None]] = mapped_column(
-    	DateTime(timezone=True)
-    )
+    deleted_at: Mapped[Union[datetime, None]] = mapped_column(DateTime(timezone=True))
 
     refresh_tokens: Mapped[List["RefreshToken"]] = relationship(
-   		back_populates="user",
-    	cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan"
     )

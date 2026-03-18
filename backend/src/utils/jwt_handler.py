@@ -26,31 +26,32 @@ class JWTPayload(BaseModel):
 ALGORITHM = "HS256"
 
 
-def create_token(
-    user_id: UUID,
-    token_type: JWTToken
-) -> Tuple[JWTPayload, str]:
+def create_token(user_id: UUID, token_type: JWTToken) -> Tuple[JWTPayload, str]:
 
     match token_type:
         case JWTToken.ACCESS_TOKEN:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            expire = datetime.now(timezone.utc) + timedelta(
+                minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            )
         case JWTToken.REFRESH_TOKEN:
-            expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-
+            expire = datetime.now(timezone.utc) + timedelta(
+                days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+            )
 
     payload = JWTPayload(
         user_id=str(user_id),
         exp=expire,
         iat=datetime.now(timezone.utc),
-        token_type=token_type.value
+        token_type=token_type.value,
     )
 
-    return (payload, jwt.encode(payload.model_dump(), settings.JWT_SECRET_KEY, ALGORITHM))
+    return (
+        payload,
+        jwt.encode(payload.model_dump(), settings.JWT_SECRET_KEY, ALGORITHM),
+    )
 
 
-def decode_token(
-    token: str
-) -> Union[JWTPayload, None]:
+def decode_token(token: str) -> Union[JWTPayload, None]:
 
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, [ALGORITHM])
@@ -59,17 +60,12 @@ def decode_token(
         return None
 
 
+def validate_token(token: str, token_type: JWTToken) -> UUID:
+    token_payload = decode_token(token)
+    if token_payload is None or token_payload.token_type != token_type:
+        raise DomainException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            message=f"Invalid {token_type} token",
+        )
 
-def validate_token(
-	token: str,
-	token_type: JWTToken
-) -> UUID:
-	token_payload = decode_token(token)
-	if token_payload is None or token_payload.token_type != token_type:
-		raise DomainException(
-			status_code=HTTPStatus.UNAUTHORIZED,
-			message=f"Invalid {token_type} token",
-		)
-	
-	return UUID(token_payload.user_id)
-
+    return UUID(token_payload.user_id)

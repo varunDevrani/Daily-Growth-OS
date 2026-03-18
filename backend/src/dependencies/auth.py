@@ -12,13 +12,12 @@ security = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
-    credentials: Union[HTTPAuthorizationCredentials, None] = Depends(security)
+    credentials: Union[HTTPAuthorizationCredentials, None] = Depends(security),
 ) -> UUID:
 
-	if not credentials:
-		raise DomainException(
-			status_code=HTTPStatus.UNAUTHORIZED,
-			message="Invalid Credentials"
-		)
+    if not credentials:
+        raise DomainException(
+            status_code=HTTPStatus.UNAUTHORIZED, message="Invalid Credentials"
+        )
 
-	return validate_token(credentials.credentials, JWTToken.ACCESS_TOKEN)
+    return validate_token(credentials.credentials, JWTToken.ACCESS_TOKEN)
