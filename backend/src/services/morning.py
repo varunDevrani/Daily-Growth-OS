@@ -1,0 +1,166 @@
+from datetime import date
+from uuid import UUID
+from http import HTTPStatus
+
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+
+from src.models.morning import Morning
+from src.models.morning_activity import MorningActivity
+
+from src.schemas.morning import MorningCreate, MorningUpdate, MorningResponse
+from src.schemas.morning_activity import MorningActivityResponse, MorningActivityCreate
+
+from src.exceptions import DomainException
+
+
+def get_morning_or_404(db: Session, user_id: UUID, checkin_id: UUID) -> Morning:
+    stmt = select(Morning).where(
+        Morning.id == checkin_id,
+        Morning.user_id == user_id
+    )
+    morning = db.scalar(stmt)
+
+    if not morning:
+        raise DomainException(
+            status_code=HTTPStatus.NOT_FOUND,
+            message="Morning not found"
+        )
+
+    return morning
+
+
+def create_morning(db: Session, user_id: UUID, payload: MorningCreate) -> MorningResponse:
+    today = date.today()
+
+    stmt = select(Morning).where(
+        Morning.user_id == user_id,
+        Morning.date == today
+    )
+
+    existing = db.scalar(stmt)
+
+    if existing:
+        raise DomainException(
+            status_code=HTTPStatus.CONFLICT,
+            message="Morning already exists"
+        )
+
+    morning = Morning(
+        user_id=user_id,
+        confidence_rating=payload.confidence_rating
+    )
+
+    db.add(morning)
+    db.flush()
+
+    # create activities
+    for activity in payload.activities:
+        new_activity = MorningActivity(
+            checkin_id=morning.id,
+            title=activity.title,
+            is_priority=activity.is_priority,
+            is_habit=activity.is_habit
+        )
+        db.add(new_activity)
+
+    db.flush()
+    db.refresh(morning)
+
+    return MorningResponse.model_validate(morning)
+
+
+def add_activity(
+    db: Session,
+    user_id: UUID,
+    checkin_id: UUID,
+    payload: MorningActivityCreate
+) -> MorningActivityResponse:
+    get_morning_or_404(db, user_id, checkin_id)
+
+    activity = MorningActivity(
+        checkin_id=checkin_id,
+        title=payload.title,
+        is_priority=payload.is_priority,
+        is_habit=payload.is_habit
+    )
+
+    db.add(activity)
+    db.flush()
+    db.refresh(activity)
+
+    return MorningActivityResponse.model_validate(activity)
+
+
+def update_morning(
+    db: Session,
+    user_id: UUID,
+    checkin_id: UUID,
+    payload: MorningUpdate
+) -> MorningResponse:
+    morning = get_morning_or_404(db, user_id, checkin_id)
+
+    # update rating
+    if payload.confidence_rating is not None:
+        morning.confidence_rating = payload.confidence_rating
+
+    if payload.activities is not None:
+        stmt = select(MorningActivity).where(
+            MorningActivity.checkin_id == checkin_id
+        )
+
+        activities = db.scalars(stmt).all()
+        activity_map = {a.id: a for a in activities}
+
+        for activity_update in payload.activities:
+            activity = activity_map.get(activity_update.id)
+
+            if not activity:
+                continue
+
+            update_data = activity_update.model_dump(exclude_unset=True, exclude_none=True)
+
+            update_data.pop("id", None)
+
+            for key, value in update_data.items():
+                setattr(activity, key, value)
+
+    db.flush()
+    db.refresh(morning)
+
+    return MorningResponse.model_validate(morning)
+
+
+def get_morning(db: Session, user_id: UUID, target_date: date) -> MorningResponse:
+    stmt = select(Morning).where(
+        Morning.user_id == user_id,
+        Morning.date == target_date
+    )
+
+    morning = db.scalar(stmt)
+
+    if not morning:
+        raise DomainException(
+            status_code=HTTPStatus.NOT_FOUND,
+            message="Morning not found"
+        )
+
+    return MorningResponse.model_validate(morning)
+
+
+def delete_activity(db: Session, user_id: UUID, activity_id: UUID) -> None:
+    stmt = select(MorningActivity).join(Morning).where(
+        MorningActivity.id == activity_id,
+        Morning.user_id == user_id
+    )
+
+    activity = db.scalar(stmt)
+
+    if not activity:
+        raise DomainException(
+            status_code=HTTPStatus.NOT_FOUND,
+            message="Activity not found"
+        )
+    
+    db.delete(activity)
+    db.flush()

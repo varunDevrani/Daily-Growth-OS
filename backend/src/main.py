@@ -4,7 +4,7 @@ from src.database.database import engine
 from src.exceptions import register_exception_handlers
 from src.models.base import Base
 from src.routes.auth import router as auth_router
-
+from src.routes.morning import router as morning_router
 app = FastAPI()
 
 
@@ -22,3 +22,4 @@ def health_check():
     }
 
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(morning_router, prefix="/api/v1")
