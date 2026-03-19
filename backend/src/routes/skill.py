@@ -24,7 +24,7 @@ from src.schemas.skill import (
     SkillUpdateRequest,
 )
 
-router = APIRouter(prefix="/skills", tags=["skills"], dependencies=[Depends(get_user_or_404)])
+router = APIRouter(prefix="/skills", tags=["skills"])
 
 
 @router.get("", status_code=HTTPStatus.OK, response_model=SuccessResponse[SkillsResponse])
@@ -64,13 +64,11 @@ def get_skill_by_id(
 @router.put("/{skill_id}", status_code=HTTPStatus.OK, response_model=SuccessResponse[SkillResponse])
 def update_skill_by_id(
 	payload: SkillUpdateRequest,
-	user: User = Depends(get_user_or_404),
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
 ) -> SuccessResponse[SkillResponse]:
 	return controllers.update_skill_by_id(
 		payload,
-		user,
 		skill,
 		db
 	)
@@ -79,13 +77,11 @@ def update_skill_by_id(
 @router.patch("/{skill_id}", status_code=HTTPStatus.OK, response_model=SuccessResponse[SkillResponse])
 def partial_update_skill_by_id(
 	payload: SkillPartialUpdateRequest,
-	user: User = Depends(get_user_or_404),
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
 ) -> SuccessResponse[SkillResponse]:
 	return controllers.partial_update_skill_by_id(
 		payload,
-		user,
 		skill,
 		db
 	)
@@ -135,24 +131,18 @@ def partial_update_skill_activities(
 @router.get("/{skill_id}/activities/{activity_id}", status_code=HTTPStatus.OK, response_model=SuccessResponse[SkillActivityResponse])
 def get_skill_activity_by_id(
 	activity: SkillActivity = Depends(get_skill_activity_or_404),
-	skill: Skill = Depends(get_skill_or_404),
-	db: Session = Depends(get_db)
 ) -> SuccessResponse[SkillActivityResponse]:
 	return controllers.get_skill_activity_by_id(
 		activity,
-		skill,
-		db
 	)
 
 
-@router.delete("/{skill_id}/activities/{activity_id}", status_code=HTTPStatus.OK, response_model=SuccessResponse)
+@router.delete("/{skill_id}/activities/{activity_id}", status_code=HTTPStatus.NO_CONTENT, response_model=None)
 def delete_skill_activity_by_id(
 	activity: SkillActivity = Depends(get_skill_activity_or_404),
-	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-) -> SuccessResponse:
+) -> None:
 	return controllers.delete_skill_activity_by_id(
 		activity,
-		skill,
 		db
 	)

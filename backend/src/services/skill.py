@@ -23,6 +23,24 @@ from src.schemas.skill import (
     SkillUpdateRequest,
 )
 
+def get_skill_by_id(
+	skill: Skill,
+	db: Session
+) -> SkillResponse:
+	activities: List[SkillActivityResponse] = []
+	stmt = select(SkillActivity).where(SkillActivity.skill_id == skill.id)
+	skill_activity_data = db.scalars(stmt).all()
+	for activity in skill_activity_data:
+		activities.append(SkillActivityResponse.model_validate(activity))
+
+	return SkillResponse(
+		id=skill.id,
+		name=skill.name,
+		is_completed=skill.is_completed,
+		total_activities=len(activities),
+		activities=activities
+	)
+
 
 def get_skills(
 	user: User,
@@ -32,21 +50,8 @@ def get_skills(
 	skills_data = db.scalars(stmt).all()
 
 	result: List[SkillResponse] = []
-
 	for data in skills_data:
-		activities: List[SkillActivityResponse] = []
-		stmt = select(SkillActivity).where(SkillActivity.skill_id == data.id)
-		skill_activity_data = db.scalars(stmt).all()
-		for activity in skill_activity_data:
-			activities.append(SkillActivityResponse.model_validate(activity))
-
-		result.append(SkillResponse(
-			id=data.id,
-			name=data.name,
-			is_completed=data.is_completed,
-			total_activities=len(activities),
-			activities=activities
-		))
+		result.append(get_skill_by_id(data, db))
 
 	return SkillsResponse(
 		total_skills=len(skills_data),
@@ -78,17 +83,12 @@ def create_skill(
 
 	activities: List[SkillActivityResponse] = []
 	if payload.activities is not None:
-
-		for activity in payload.activities:
-			skill_activity_data = SkillActivity(
-				skill_id=skill_data.id,
-				**activity.model_dump()
-			)
-			db.add(skill_activity_data)
-			db.flush()
-			db.refresh(skill_activity_data)
-
-			activities.append(SkillActivityResponse.model_validate(skill_activity_data))
+		response = create_skill_activities(
+			SkillActivitiesCreateRequest(activities=payload.activities),
+			skill_data,
+			db
+		)
+		activities = response.activities
 
 	return SkillResponse(
 		id=skill_data.id,
@@ -99,32 +99,13 @@ def create_skill(
 	)
 
 
-def get_skill_by_id(
-	skill: Skill,
-	db: Session
-) -> SkillResponse:
-	activities: List[SkillActivityResponse] = []
-	stmt = select(SkillActivity).where(SkillActivity.skill_id == skill.id)
-	skill_activity_data = db.scalars(stmt).all()
-	for activity in skill_activity_data:
-		activities.append(SkillActivityResponse.model_validate(activity))
-
-	return SkillResponse(
-		id=skill.id,
-		name=skill.name,
-		is_completed=skill.is_completed,
-		total_activities=len(activities),
-		activities=activities
-	)
-
 
 def update_skill_by_id(
 	payload: SkillUpdateRequest,
-	user: User,
 	skill: Skill,
 	db: Session
 ) -> SkillResponse:
-	stmt = select(Skill).where(Skill.name == payload.name, Skill.user_id == user.id, Skill.id != skill.id)
+	stmt = select(Skill).where(Skill.name == payload.name, Skill.user_id == skill.user_id, Skill.id != skill.id)
 	skill_data = db.scalar(stmt)
 	if skill_data is not None:
 		raise DomainException(
@@ -139,21 +120,16 @@ def update_skill_by_id(
 	db.flush()
 	db.refresh(skill)
 
-	return SkillResponse(
-		id=skill.id,
-		name=skill.name,
-		is_completed=skill.is_completed
-	)
+	return get_skill_by_id(skill, db)
 
 
 def partial_update_skill_by_id(
 	payload: SkillPartialUpdateRequest,
-	user: User,
 	skill: Skill,
 	db: Session
 ) -> SkillResponse:
-	if payload.name:
-		stmt = select(Skill).where(Skill.name == payload.name, Skill.user_id == user.id, Skill.id != skill.id)
+	if payload.name is not None:
+		stmt = select(Skill).where(Skill.name == payload.name, Skill.user_id == skill.user_id, Skill.id != skill.id)
 		skill_data = db.scalar(stmt)
 		if skill_data is not None:
 			raise DomainException(
@@ -168,11 +144,7 @@ def partial_update_skill_by_id(
 	db.flush()
 	db.refresh(skill)
 
-	return SkillResponse(
-		id=skill.id,
-		name=skill.name,
-		is_completed=skill.is_completed
-	)
+	return get_skill_by_id(skill, db)
 
 
 def create_skill_activities(
@@ -251,16 +223,14 @@ def partial_update_skill_activities(
 
 def get_skill_activity_by_id(
 	activity: SkillActivity,
-	skill: Skill,
-	db: Session
 ) -> SkillActivityResponse:
 	return SkillActivityResponse.model_validate(activity)
 
 
 def delete_skill_activity_by_id(
 	activity: SkillActivity,
-	skill: Skill,
 	db: Session
 ) -> None:
 	db.delete(activity)
 	db.flush()
+

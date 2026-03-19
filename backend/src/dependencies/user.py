@@ -20,7 +20,7 @@ def get_user_or_404(
 	if user_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message="user does not exist"
+			message="User does not exist"
 		)
 
 	return user_data

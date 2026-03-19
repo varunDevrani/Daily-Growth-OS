@@ -2,17 +2,10 @@ from datetime import date
 from typing import Annotated, List, Union
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.schemas.base import BaseSchema
 
-
-def check_minutes_range(mins):
-	if mins < 0:
-		raise ValueError("minutes_practised should be greater than or equal to 0")
-	if mins > 1440:
-		raise ValueError("minutes_practised should be less than minutes in a day")
-	return mins
 
 
 class SkillActivityResponse(BaseModel):
@@ -28,49 +21,31 @@ class SkillActivityResponse(BaseModel):
 
 
 class SkillActivityCreateRequest(BaseSchema):
-	name: Annotated[str, Field(min_length=2, max_length=2)]
+	name: Annotated[str, Field(min_length=2, max_length=100)]
 	is_priority: bool = False
 	is_habit_to_protect: bool = False
 	is_completed: bool = False
-	minutes_practised: int = 0
-
-	@field_validator("minutes_practised", mode="after")
-	def validate_minutes_practised(cls, param):
-		return check_minutes_range(param)
+	minutes_practised: Annotated[int, Field(ge=0, le=1440)] = 0
 
 
 
 class SkillActivityUpdateRequest(BaseSchema):
 	id: UUID
-	name: str
+	name: Annotated[str, Field(min_length=2, max_length=100)]
 	is_priority: bool
 	is_habit_to_protect: bool
 	is_completed: bool
-	minutes_practised: int
+	minutes_practised: Annotated[int, Field(ge=0, le=1440)]
 
-	@field_validator("id", mode="before")
-	def validate_id(cls, param):
-		return UUID(param)
 
-	@field_validator("minutes_practised", mode="after")
-	def validate_minutes_practised(cls, param):
-		return check_minutes_range(param)
 
 class SkillActivityPartialUpdateRequest(BaseSchema):
 	id: UUID
-	name: Union[str, None] = None
+	name: Annotated[Union[str, None], Field(min_length=2, max_length=100)] = None
 	is_priority: Union[bool, None] = None
 	is_habit_to_protect: Union[bool, None] = None
 	is_completed: Union[bool, None] = None
-	minutes_practised: Union[int, None] = None
-
-	@field_validator("id", mode="before")
-	def validate_id(cls, param):
-		return UUID(param)
-
-	@field_validator("minutes_practised", mode="after")
-	def validate_minutes_practised(cls, param):
-		return check_minutes_range(param)
+	minutes_practised: Annotated[Union[int, None], Field(ge=0, le=1440)] = None
 
 
 class SkillActivitiesCreateRequest(BaseSchema):
@@ -83,28 +58,28 @@ class SkillActivitiesPartialUpdateRequest(BaseSchema):
 	activities: List[SkillActivityPartialUpdateRequest]
 
 class SkillActivitiesResponse(BaseModel):
-	activities: Union[List[SkillActivityResponse], None] = None
+	activities: List[SkillActivityResponse]
 
 class SkillResponse(BaseModel):
     id: UUID
     name: str
     is_completed: bool
-    total_activities: Union[int, None] = None
-    activities: Union[List[SkillActivityResponse], None] = None
+    total_activities: int
+    activities: List[SkillActivityResponse]
 
 class SkillCreateRequest(BaseSchema):
-    name: str
+    name: Annotated[str, Field(min_length=2, max_length=20)]
     activities: Union[List[SkillActivityCreateRequest], None] = None
 
 class SkillUpdateRequest(BaseSchema):
-    name: str
+    name: Annotated[str, Field(min_length=2, max_length=20)]
     is_completed: bool
 
 class SkillPartialUpdateRequest(BaseSchema):
-    name: Union[str, None] = None
+    name: Annotated[Union[str, None], Field(min_length=2, max_length=20)] = None
     is_completed: Union[bool, None] = None
 
 
 class SkillsResponse(BaseModel):
 	total_skills: int
-	skills: Union[List[SkillResponse], None] = None
+	skills: List[SkillResponse]

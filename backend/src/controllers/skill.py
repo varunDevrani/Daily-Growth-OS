@@ -23,14 +23,13 @@ def get_skills(
 	user: User,
 	db: Session
 ) -> SuccessResponse[SkillsResponse]:
-	skills_data = services.get_skills(
-		user,
-		db
-	)
 
 	return SuccessResponse[SkillsResponse](
-		message="skills fetched successfully",
-		data=skills_data
+		message="Skills fetched successfully",
+		data=services.get_skills(
+			user,
+			db
+		)
 	)
 
 
@@ -39,15 +38,14 @@ def create_skill(
 	user: User,
 	db: Session
 ) -> SuccessResponse[SkillResponse]:
-	skill_data = services.create_skill(
-		payload,
-		user,
-		db
-	)
 
 	return SuccessResponse[SkillResponse](
-		message="skill created successfully",
-		data=skill_data
+		message="Skill created successfully",
+		data=services.create_skill(
+			payload,
+			user,
+			db
+		)
 	)
 
 
@@ -55,52 +53,45 @@ def get_skill_by_id(
 	skill: Skill,
 	db: Session
 ) -> SuccessResponse[SkillResponse]:
-	skill_data = services.get_skill_by_id(
-		skill,
-		db
-	)
-
+	
 	return SuccessResponse[SkillResponse](
-		message="skill fetched successfully",
-		data=skill_data
+		message="Skill fetched successfully",
+		data=services.get_skill_by_id(
+			skill,
+			db
+		)
 	)
 
 
 def update_skill_by_id(
 	payload: SkillUpdateRequest,
-	user: User,
 	skill: Skill,
 	db: Session
 ) -> SuccessResponse[SkillResponse]:
-	skill_data = services.update_skill_by_id(
-		payload,
-		user,
-		skill,
-		db
-	)
-
+	
 	return SuccessResponse[SkillResponse](
-		message="skill updated successfully",
-		data=skill_data
+		message="Skill updated successfully",
+		data=services.update_skill_by_id(
+			payload,
+			skill,
+			db
+		)
 	)
 
 
 def partial_update_skill_by_id(
 	payload: SkillPartialUpdateRequest,
-	user: User,
 	skill: Skill,
 	db: Session
 ) -> SuccessResponse[SkillResponse]:
-	skill_data = services.partial_update_skill_by_id(
-		payload,
-		user,
-		skill,
-		db
-	)
 
 	return SuccessResponse[SkillResponse](
-		message="skill updated successfully",
-		data=skill_data
+		message="Skill updated successfully",
+		data=services.partial_update_skill_by_id(
+			payload,
+			skill,
+			db
+		)
 	)
 
 
@@ -109,15 +100,14 @@ def create_skill_activities(
 	skill: Skill,
 	db: Session
 ) -> SuccessResponse[SkillActivitiesResponse]:
-	skill_activities_data = services.create_skill_activities(
-		payload,
-		skill,
-		db
-	)
 
 	return SuccessResponse[SkillActivitiesResponse](
-		message="skill activities created successfully",
-		data=skill_activities_data
+		message="Skill activities created successfully",
+		data=services.create_skill_activities(
+			payload,
+			skill,
+			db
+		)
 	)
 
 
@@ -126,15 +116,14 @@ def update_skill_activities(
 	skill: Skill,
 	db: Session
 ) -> SuccessResponse[SkillActivitiesResponse]:
-	skill_activities_data = services.update_skill_activities(
-		payload,
-		skill,
-		db
-	)
 
 	return SuccessResponse[SkillActivitiesResponse](
-		message="skill activities updated successfully",
-		data=skill_activities_data
+		message="Skill activities updated successfully",
+		data=services.update_skill_activities(
+			payload,
+			skill,
+			db
+		)
 	)
 
 
@@ -143,46 +132,35 @@ def partial_update_skill_activities(
 	skill: Skill,
 	db: Session
 ) -> SuccessResponse[SkillActivitiesResponse]:
-	skill_activities_data = services.partial_update_skill_activities(
-		payload,
-		skill,
-		db
-	)
 
 	return SuccessResponse[SkillActivitiesResponse](
-		message="skill activities updated successfully",
-		data=skill_activities_data
+		message="Skill activities updated successfully",
+		data=services.partial_update_skill_activities(
+			payload,
+			skill,
+			db
+		)
 	)
 
 
 def get_skill_activity_by_id(
 	activity: SkillActivity,
-	skill: Skill,
-	db: Session
 ) -> SuccessResponse[SkillActivityResponse]:
-	skill_activity_data = services.get_skill_activity_by_id(
-		activity,
-		skill,
-		db
-	)
 
 	return SuccessResponse[SkillActivityResponse](
-		message="skill activity fetched successfully",
-		data=skill_activity_data
+		message="Skill activity fetched successfully",
+		data=services.get_skill_activity_by_id(
+			activity,
+		)
 	)
 
 
 def delete_skill_activity_by_id(
 	activity: SkillActivity,
-	skill: Skill,
 	db: Session
-) -> SuccessResponse:
+) -> None:
+	
 	services.delete_skill_activity_by_id(
 		activity,
-		skill,
 		db
-	)
-
-	return SuccessResponse(
-		message="skill activity deleted successfully",
 	)

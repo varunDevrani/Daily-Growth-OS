@@ -20,13 +20,13 @@ def get_skill_or_404(
 	db: Session = Depends(get_db)
 ) -> Skill:
 
-	stmt = select(Skill).where(Skill.id == skill_id)
+	stmt = select(Skill).where(Skill.id == skill_id, Skill.user_id == user.id)
 	skill_data = db.scalar(stmt)
 
-	if skill_data is None or skill_data.user_id != user.id:
+	if skill_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message="skill does not exist"
+			message="Skill does not exist"
 		)
 
 	return skill_data
@@ -37,13 +37,13 @@ def get_skill_activity_or_404(
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
 ) -> SkillActivity:
-	stmt = select(SkillActivity).where(SkillActivity.id == activity_id)
+	stmt = select(SkillActivity).where(SkillActivity.id == activity_id, SkillActivity.skill_id == skill.id)
 	activity_data = db.scalar(stmt)
 
-	if activity_data is None or activity_data.skill_id != skill.id:
+	if activity_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message="skill activity does not exist"
+			message="Skill activity does not exist"
 		)
 
 	return activity_data
@@ -54,12 +54,13 @@ def validate_skill_activity_ids_or_404(
 	skill_id: UUID,
 	db: Session
 ) -> None:
-	stmt = select(SkillActivity.id).where(SkillActivity.id.in_(ids)).where(SkillActivity.skill_id == skill_id)
+	stmt = select(SkillActivity.id).where(SkillActivity.id.in_(ids), SkillActivity.skill_id == skill_id)
 	found_ids = db.scalars(stmt).all()
 	missing_ids = set(ids) - set(found_ids)
 
 	if missing_ids:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message=f"activities not found: {missing_ids}"
+			message=f"Skill activities not found: {missing_ids}"
 		)
+
