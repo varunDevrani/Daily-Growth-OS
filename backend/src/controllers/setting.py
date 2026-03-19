@@ -18,7 +18,7 @@ def create_setting(
 	)
 	
 	return SuccessResponse[SettingResponse](
-		message="settings created successfully",
+		message="Setting created successfully",
 		data=setting_data
 	)
 
@@ -33,7 +33,7 @@ def get_setting(
 	)
 
 	return SuccessResponse[SettingResponse](
-		message="settings fetched successfully",
+		message="Setting fetched successfully",
 		data=setting_data
 	)
 
@@ -50,6 +50,6 @@ def partial_update_setting(
 	)
 
 	return SuccessResponse[SettingResponse](
-		message="settings updated successfully",
+		message="Setting updated successfully",
 		data=setting_data
 	)

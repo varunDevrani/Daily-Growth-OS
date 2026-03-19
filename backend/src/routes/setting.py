@@ -26,7 +26,7 @@ def create_setting(
 	
 
 @router.get("", status_code=HTTPStatus.OK, response_model=SuccessResponse[SettingResponse])
-def get_settings(
+def get_setting(
 	user: User = Depends(get_user_or_404),
     db: Session = Depends(get_db)
 ) -> SuccessResponse[SettingResponse]:

@@ -19,7 +19,7 @@ def create_setting(
 	if setting_data is not None:
 		raise DomainException(
 			status_code=HTTPStatus.CONFLICT,
-			message="settings already exists",
+			message="Setting already exists",
 		)
 	
 	setting_data = Setting(
@@ -45,7 +45,7 @@ def get_setting(
 	if setting_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message="settings not found",
+			message="Setting not found",
 		)
 
 	return SettingResponse.model_validate(setting_data)
@@ -63,7 +63,7 @@ def partial_update_setting(
 	if setting_data is None:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message="settings not found",
+			message="Setting not found",
 		)
 
 	updated_payload = payload.model_dump(exclude_unset=True, exclude_none=True)
