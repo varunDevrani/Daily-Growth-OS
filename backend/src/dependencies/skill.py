@@ -26,7 +26,7 @@ def get_skill_or_404(
 	if skill_data is None or skill_data.user_id != user.id:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message=f"skill with {skill_id} does not exist"
+			message="skill does not exist"
 		)
 
 	return skill_data
@@ -43,7 +43,7 @@ def get_skill_activity_or_404(
 	if activity_data is None or activity_data.skill_id != skill.id:
 		raise DomainException(
 			status_code=HTTPStatus.NOT_FOUND,
-			message=f"skill activity with {activity_id} does not exist"
+			message="skill activity does not exist"
 		)
 
 	return activity_data

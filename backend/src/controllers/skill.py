@@ -29,7 +29,7 @@ def get_skills(
 	)
 
 	return SuccessResponse[SkillsResponse](
-		message=f"skills for user [{user.id}] fetched successfully",
+		message="skills fetched successfully",
 		data=skills_data
 	)
 
@@ -99,7 +99,7 @@ def partial_update_skill_by_id(
 	)
 
 	return SuccessResponse[SkillResponse](
-		message="skill patched successfully",
+		message="skill updated successfully",
 		data=skill_data
 	)
 
@@ -150,7 +150,7 @@ def partial_update_skill_activities(
 	)
 
 	return SuccessResponse[SkillActivitiesResponse](
-		message="skill activities patched successfully",
+		message="skill activities updated successfully",
 		data=skill_activities_data
 	)
 
@@ -176,14 +176,13 @@ def delete_skill_activity_by_id(
 	activity: SkillActivity,
 	skill: Skill,
 	db: Session
-) -> SuccessResponse[SkillActivityResponse]:
-	skill_activity_data = services.delete_skill_activity_by_id(
+) -> SuccessResponse:
+	services.delete_skill_activity_by_id(
 		activity,
 		skill,
 		db
 	)
 
-	return SuccessResponse[SkillActivityResponse](
+	return SuccessResponse(
 		message="skill activity deleted successfully",
-		data=skill_activity_data
 	)

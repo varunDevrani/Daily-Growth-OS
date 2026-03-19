@@ -1,10 +1,18 @@
 from datetime import date
-from typing import List, Union
+from typing import Annotated, List, Union
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.schemas.base import BaseSchema
+
+
+def check_minutes_range(mins):
+	if mins < 0:
+		raise ValueError("minutes_practised should be greater than or equal to 0")
+	if mins > 1440:
+		raise ValueError("minutes_practised should be less than minutes in a day")
+	return mins
 
 
 class SkillActivityResponse(BaseModel):
@@ -20,7 +28,7 @@ class SkillActivityResponse(BaseModel):
 
 
 class SkillActivityCreateRequest(BaseSchema):
-	name: str
+	name: Annotated[str, Field(min_length=2, max_length=2)]
 	is_priority: bool = False
 	is_habit_to_protect: bool = False
 	is_completed: bool = False
@@ -28,9 +36,7 @@ class SkillActivityCreateRequest(BaseSchema):
 
 	@field_validator("minutes_practised", mode="after")
 	def validate_minutes_practised(cls, param):
-		if param < 0:
-			raise ValueError("minutes_practised should be greater than or equal to 0")
-		return param
+		return check_minutes_range(param)
 
 
 
@@ -48,9 +54,7 @@ class SkillActivityUpdateRequest(BaseSchema):
 
 	@field_validator("minutes_practised", mode="after")
 	def validate_minutes_practised(cls, param):
-		if param < 0:
-			raise ValueError("minutes_practised should be greater than or equal to 0")
-		return param
+		return check_minutes_range(param)
 
 class SkillActivityPartialUpdateRequest(BaseSchema):
 	id: UUID
@@ -66,9 +70,7 @@ class SkillActivityPartialUpdateRequest(BaseSchema):
 
 	@field_validator("minutes_practised", mode="after")
 	def validate_minutes_practised(cls, param):
-		if param < 0:
-			raise ValueError("minutes_practised should be greater than or equal to 0")
-		return param
+		return check_minutes_range(param)
 
 
 class SkillActivitiesCreateRequest(BaseSchema):

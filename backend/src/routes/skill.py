@@ -27,23 +27,23 @@ from src.schemas.skill import (
 router = APIRouter(prefix="/skills", tags=["skills"], dependencies=[Depends(get_user_or_404)])
 
 
-@router.get("", status_code=200, response_model=SuccessResponse[SkillsResponse])
+@router.get("", status_code=HTTPStatus.OK, response_model=SuccessResponse[SkillsResponse])
 def get_skills(
 	user: User = Depends(get_user_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillsResponse]:
 	return controllers.get_skills(
 		user,
 		db
 	)
 
 
-@router.post("", status_code=201, response_model=SuccessResponse[SkillResponse])
+@router.post("", status_code=HTTPStatus.CREATED, response_model=SuccessResponse[SkillResponse])
 def create_skill(
 	payload: SkillCreateRequest,
 	user: User = Depends(get_user_or_404),
 	db: Session = Depends(get_db),
-):
+) -> SuccessResponse[SkillResponse]:
 	return controllers.create_skill(
 		payload,
 		user,
@@ -55,7 +55,7 @@ def create_skill(
 def get_skill_by_id(
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillResponse]:
 	return controllers.get_skill_by_id(
 		skill,
 		db
@@ -67,7 +67,7 @@ def update_skill_by_id(
 	user: User = Depends(get_user_or_404),
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillResponse]:
 	return controllers.update_skill_by_id(
 		payload,
 		user,
@@ -82,7 +82,7 @@ def partial_update_skill_by_id(
 	user: User = Depends(get_user_or_404),
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillResponse]:
 	return controllers.partial_update_skill_by_id(
 		payload,
 		user,
@@ -97,7 +97,7 @@ def create_skill_activities(
 	payload: SkillActivitiesCreateRequest,
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillActivitiesResponse]:
 	return controllers.create_skill_activities(
 		payload,
 		skill,
@@ -110,7 +110,7 @@ def update_skill_activities(
 	payload: SkillActivitiesUpdateRequest,
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillActivitiesResponse]:
 	return controllers.update_skill_activities(
 		payload,
 		skill,
@@ -123,7 +123,7 @@ def partial_update_skill_activities(
 	payload: SkillActivitiesPartialUpdateRequest,
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillActivitiesResponse]:
 	return controllers.partial_update_skill_activities(
 		payload,
 		skill,
@@ -137,7 +137,7 @@ def get_skill_activity_by_id(
 	activity: SkillActivity = Depends(get_skill_activity_or_404),
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse[SkillActivityResponse]:
 	return controllers.get_skill_activity_by_id(
 		activity,
 		skill,
@@ -145,12 +145,12 @@ def get_skill_activity_by_id(
 	)
 
 
-@router.delete("/{skill_id}/activities/{activity_id}", status_code=HTTPStatus.OK, response_model=SuccessResponse[SkillActivityResponse])
+@router.delete("/{skill_id}/activities/{activity_id}", status_code=HTTPStatus.OK, response_model=SuccessResponse)
 def delete_skill_activity_by_id(
 	activity: SkillActivity = Depends(get_skill_activity_or_404),
 	skill: Skill = Depends(get_skill_or_404),
 	db: Session = Depends(get_db)
-):
+) -> SuccessResponse:
 	return controllers.delete_skill_activity_by_id(
 		activity,
 		skill,

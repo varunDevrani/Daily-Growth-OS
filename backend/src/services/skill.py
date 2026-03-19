@@ -261,8 +261,6 @@ def delete_skill_activity_by_id(
 	activity: SkillActivity,
 	skill: Skill,
 	db: Session
-) -> SkillActivityResponse:
+) -> None:
 	db.delete(activity)
 	db.flush()
-
-	return SkillActivityResponse.model_validate(activity)
