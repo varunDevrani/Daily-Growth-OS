@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Annotated, Union
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -17,13 +17,5 @@ class UserResponse(BaseModel):
 
 
 class UserPartialUpdateRequest(BaseSchema):
-	first_name: Union[str, None] = Field(
-		default=None,
-		min_length=2,
-		max_length=20
-	)
-	last_name: Union[str, None] = Field(
-		default=None,
-		min_length=2,
-		max_length=20
-	)
+	first_name: Annotated[Union[str, None], Field(min_length=2, max_length=20)] = None
+	last_name: Annotated[Union[str, None], Field(min_length=2, max_length=20)] = None

@@ -25,7 +25,7 @@ def partial_update_user(
 	)
 
 
-@router.delete("", status_code=HTTPStatus.NO_CONTENT)
+@router.delete("", status_code=HTTPStatus.NO_CONTENT, response_model=None)
 def delete_user(
 	user: User = Depends(get_user_or_404),
 	db: Session = Depends(get_db)
