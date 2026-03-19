@@ -37,3 +37,8 @@ class User(IDMixin, TimestampMixin, Base):
    		back_populates="user",
     	cascade="all, delete-orphan"
     )
+    
+    skills: Mapped[List["Skill"]] = relationship(
+   		back_populates="user",
+     	cascade="all, delete-orphan"
+    )
