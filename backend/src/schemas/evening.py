@@ -1,26 +1,28 @@
 from pydantic import ConfigDict, Field
 from uuid import UUID
-from src.schemas.base import BaseSchema
 from typing import Optional
 import datetime
+from src.schemas.base import BaseSchema
 
 
 class EveningCreate(BaseSchema):
-    win: str
-    mistake:str
-    distraction: str
+    win: str = Field(..., min_length=2, max_length=255)
+    mistake: str = Field(..., min_length=2, max_length=255)
+    distraction: str = Field(..., min_length=2, max_length=255)
+    lesson: str = Field(..., min_length=2, max_length=255)
+
     mood_rating: int = Field(..., ge=1, le=5)
     energy_rating: int = Field(..., ge=1, le=5)
-    lesson:str 
+
 
 class EveningUpdate(BaseSchema):
-    date: Optional[datetime.date] = None
-    win: Optional[str] = None
-    mistake: Optional[str] = None
-    distraction: Optional[str] = None
+    win: Optional[str] = Field(None, min_length=2, max_length=255)
+    mistake: Optional[str] = Field(None, min_length=2, max_length=255)
+    distraction: Optional[str] = Field(None, min_length=2, max_length=255)
+    lesson: Optional[str] = Field(None, min_length=2, max_length=255)
+
     mood_rating: Optional[int] = Field(None, ge=1, le=5)
     energy_rating: Optional[int] = Field(None, ge=1, le=5)
-    lesson: Optional[str] = None    
 
 
 class EveningResponse(BaseSchema):
@@ -29,12 +31,14 @@ class EveningResponse(BaseSchema):
     id: UUID
     user_id: UUID
     date: datetime.date
+
     win: str
-    mistake:str
+    mistake: str
     distraction: str
-    mood_rating: int 
-    energy_rating: int 
-    lesson:str
+    lesson: str
+
+    mood_rating: int
+    energy_rating: int
+
     created_at: datetime.datetime
     updated_at: datetime.datetime
-
